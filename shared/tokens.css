@@ -1,0 +1,101 @@
+/* YF AI 汇报 deck · 共享设计 token（来源：assets/yf-brand/brand-spec.md + DESIGN-visual.md） */
+
+:root {
+  /* 品牌 */
+  --yf-blue: #196EFF;          /* YF 品牌蓝（唯一 action 色） */
+  --yf-blue-active: #0034a8;   /* 官网深蓝，active 态 */
+
+  /* 墨色与文本 */
+  --ink: #0a0b0d;
+  --body: #5b616e;
+  --muted: #7c828a;
+  --muted-soft: #a8acb3;
+
+  /* 表面 */
+  --canvas: #ffffff;
+  --surface-soft: #f7f7f7;
+  --surface-strong: #eef0f3;
+  --surface-dark: #0a0b0d;
+  --surface-dark-elevated: #16181c;
+  --on-dark: #ffffff;
+  --on-dark-soft: #a8acb3;
+
+  /* 分隔线 */
+  --hairline: #dee1e6;
+  --hairline-soft: #eef0f3;
+
+  /* 行情语义（YF App 实测：红涨绿跌，仅文字色） */
+  --up: #cf202f;
+  --down: #05b169;
+
+  /* 圆角 */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-pill: 100px;
+
+  /* 间距（4px 基元） */
+  --s-xs: 8px; --s-sm: 12px; --s-base: 16px; --s-md: 20px;
+  --s-lg: 24px; --s-xl: 32px; --s-xxl: 48px; --s-section: 96px;
+
+  /* 字体 */
+  --f-display: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --f-body: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --f-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { width: 1920px; height: 1080px; }
+
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 24px;
+  line-height: 1.5;
+  overflow: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 数字一律 mono */
+.num, .price, .pct, .stat-num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.pct.up { color: var(--up); }
+.pct.down { color: var(--down); }
+
+/* 每页统一 chrome */
+.page-tag {
+  position: absolute; top: 56px; left: 96px;
+  font-size: 15px; font-weight: 600; letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.page-tag .yf { color: var(--yf-blue); }
+.page-logo {
+  position: absolute; top: 48px; right: 96px; height: 30px;
+}
+.page-footer {
+  position: absolute; bottom: 40px; left: 96px; right: 96px;
+  display: flex; justify-content: space-between;
+  font-size: 14px; color: var(--muted-soft);
+}
+
+/* 深色页反色 */
+body.dark { background: var(--surface-dark); color: var(--on-dark); }
+body.dark .page-tag { color: var(--on-dark-soft); }
+
+/* 通用组件 */
+.badge {
+  display: inline-block; padding: 4px 14px; border-radius: var(--r-pill);
+  background: var(--surface-strong); color: var(--ink);
+  font-size: 14px; font-weight: 600; letter-spacing: 0.06em;
+}
+.badge.blue { background: var(--yf-blue); color: #fff; }
+.badge.dark-elev { background: var(--surface-dark-elevated); color: var(--on-dark); }
+.badge.warn { background: #fdf2f3; color: var(--up); }
+
+.card {
+  background: var(--canvas); border: 1px solid var(--hairline);
+  border-radius: var(--r-xl); padding: 32px;
+}
+.card.dark-elev {
+  background: var(--surface-dark-elevated); border: none; color: var(--on-dark);
+}

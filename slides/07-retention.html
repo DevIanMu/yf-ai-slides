@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>08 · 触达渠道 × 留存运营</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<style>
+  body { padding: 150px 96px 0; }
+  h1 { font-family: var(--f-display); font-size: 56px; font-weight: 400; letter-spacing: -1.5px; margin: 20px 0 16px; }
+  .lead { font-size: 22px; color: var(--body); margin-bottom: 48px; }
+  .lead b { color: var(--ink); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+  .ch { border-radius: var(--r-xl); padding: 36px; background: var(--surface-soft); }
+  .ch h3 { font-size: 26px; font-weight: 600; margin: 14px 0 6px; }
+  .ch .freq { font-size: 15px; color: var(--muted); margin-bottom: 18px; }
+  .ch ul { list-style: none; }
+  .ch li { font-size: 19px; padding: 8px 0; color: var(--body); border-bottom: 1px solid var(--hairline-soft); }
+  .ch li:last-child { border-bottom: none; }
+  .ch li b { color: var(--ink); font-weight: 600; }
+  .flywheel {
+    margin-top: 40px; background: var(--surface-dark); color: var(--on-dark);
+    border-radius: var(--r-xl); padding: 36px 48px;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .flywheel .node { font-size: 19px; text-align: center; line-height: 1.45; }
+  .flywheel .node b { display: block; font-size: 20px; }
+  .flywheel .node .sub { color: var(--on-dark-soft); font-size: 16px; }
+  .flywheel .arr { color: var(--yf-blue); font-size: 26px; font-weight: 600; }
+  .flywheel .loop-tag {
+    font-size: 14px; color: var(--on-dark-soft); letter-spacing: 0.12em;
+    writing-mode: initial; margin-left: 16px; white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+  <div class="page-tag"><span class="yf">07</span> · 触达渠道 × 留存运营</div>
+  <img class="page-logo" src="../assets/yf-brand/logo_blue@3x.png" style="height:36px" alt="">
+  <h1>内容不只躺在 App 里——主动触达，建留存飞轮</h1>
+  <p class="lead">核心原则：<b>每条触达 = 用户关心的标的 + 可点击回平台的钩子</b>；个性化只发生在组装层，<b>触达零新增积分成本</b>（复用日缓存内容）。</p>
+  <div class="grid" style="grid-template-columns: 1.6fr 1fr">
+    <div class="ch">
+      <span class="badge blue">Push + 站内信（一体）</span>
+      <h3>App 内触达主渠道</h3>
+      <div class="freq">Push 推送即落入站内信 · 定时内容每日 1-2 次 + 事件驱动 ≤3 条/天 · 克制</div>
+      <ul>
+        <li><b>AI 晨报 + 晚报</b>（一期主推）：自选股隔夜动态 / 当日复盘</li>
+        <li><b>自选股异动</b>：实时 Push 已上线；三期叠加「机构解读」层</li>
+        <li><b>个股看点更新</b> → 「看完整逻辑」进一页通</li>
+        <li><b>财报发布提醒</b> → 财报 AI 卡片</li>
+      </ul>
+    </div>
+    <div class="ch">
+      <span class="badge blue">邮件</span>
+      <h3>周期沉淀与召回（二期）</h3>
+      <div class="freq">每周 1 封 · 容量大 · 唤醒沉睡用户</div>
+      <ul>
+        <li><b>周报</b>：自选股周度复盘 + 下周催化</li>
+        <li>复用周内已生成内容，<b>零新增成本</b></li>
+        <li>召回流失 / 低频用户</li>
+      </ul>
+    </div>
+  </div>
+  <div class="flywheel">
+    <div class="node"><b>添加自选/持仓</b><span class="sub">YF 内部数据</span></div>
+    <div class="arr">→</div>
+    <div class="node"><b>AI 内容生成</b><span class="sub">一页通 / 线索 / 晨报</span></div>
+    <div class="arr">→</div>
+    <div class="node"><b>主动触达</b><span class="sub">Push·站内信 → 邮件</span></div>
+    <div class="arr">→</div>
+    <div class="node"><b>回平台浏览</b><span class="sub">个股页 / 自选页</span></div>
+    <div class="arr">→</div>
+    <div class="node"><b>下单交易</b><span class="sub">留存提升 → 更多自选</span></div>
+    <div class="loop-tag">循环 ↻</div>
+  </div>
+  <div class="page-footer"><span>YF × Gangtise AI 能力接入方案</span><span>07</span></div>
+</body>
+</html>

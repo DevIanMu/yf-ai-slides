@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>08 · 触达场景 × 能力映射</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<style>
+  body { padding: 140px 96px 0; }
+  h1 { font-family: var(--f-display); font-size: 54px; font-weight: 400; letter-spacing: -1.4px; margin: 18px 0 14px; }
+  .lead { font-size: 21px; color: var(--body); margin-bottom: 36px; max-width: 1600px; }
+  .lead b { color: var(--ink); }
+  table { width: 100%; border-collapse: collapse; font-size: 18px; }
+  th {
+    text-align: left; font-weight: 600; font-size: 14px; letter-spacing: 0.08em;
+    color: var(--muted); padding: 0 14px 12px; border-bottom: 1px solid var(--hairline);
+  }
+  td { padding: 13px 14px; border-bottom: 1px solid var(--hairline-soft); vertical-align: top; line-height: 1.45; }
+  td b { font-weight: 600; }
+  .ch { font-weight: 600; white-space: nowrap; }
+  .api { font-family: var(--f-mono); font-size: 15px; color: var(--body); }
+  .cost { font-family: var(--f-mono); font-size: 15px; white-space: nowrap; }
+  .free { color: var(--yf-blue); font-weight: 600; }
+  .ch-tag {
+    display: inline-block; padding: 2px 10px; border-radius: var(--r-pill);
+    font-size: 13px; font-weight: 600; margin-left: 6px;
+    background: var(--surface-strong); color: var(--ink);
+  }
+  .note { margin-top: 28px; font-size: 17px; color: var(--muted); }
+  .note b { color: var(--ink); }
+</style>
+</head>
+<body>
+  <div class="page-tag"><span class="yf">08</span> · 触达场景 × Gangtise 能力映射</div>
+  <img class="page-logo" src="../assets/yf-brand/logo_blue@3x.png" style="height:36px" alt="">
+  <h1>每条触达，用什么能力生成、如何个性化</h1>
+  <p class="lead">原则：<b>生成层永远按证券去重（全平台共享缓存）；个性化只发生在 YF 组装层</b>——用户看到的「个性化」= 他的自选股 ∩ 当日已生成的证券级内容，组装零 API 成本。</p>
+  <table>
+    <tr><th>触达场景</th><th>Gangtise 能力</th><th>生成层（按证券共享）</th><th>组装层（按用户，零成本）</th><th style="text-align:right">成本</th></tr>
+    <tr><td class="ch">异动 Push 解读层<span class="ch-tag">三期</span></td><td><span class="api">security-clue</span> 投研线索（+公告事件层）</td><td>实时行情 Push 已上线（YF 自有）；三期在其上叠加「机构怎么看」</td><td>线索按证券去重拉取；自选 ∩ 异动标的，线索 &lt;1 条不加解读</td><td class="cost r">5 积分/条</td></tr>    <tr><td class="ch">看点更新 Push<span class="ch-tag">Push·站内信</span></td><td><span class="api">stock-summary</span> 个股看点（港/A股）</td><td>热门榜每日批量刷新</td><td>自选 ∩ 当日看点更新标的</td><td class="cost r">3 积分/条</td></tr>
+    <tr><td class="ch">AI 晨报 / 晚报<span class="ch-tag">Push·站内信</span></td><td>投研线索 + 过滤版热点 + YF 当日行情</td><td>晨间批量快照；热点全 App 共享</td><td>自选股拉缓存逐只组装「隔夜动态 + 当日关注」</td><td class="cost r">复用缓存</td></tr>
+    <tr><td class="ch">财报解读<span class="ch-tag">Push·站内信</span></td><td>A股 <span class="api">earnings-review</span>；港美股取一页通财务段</td><td>财报发布事件触发，按证券生成</td><td>自选/持仓 ∩ 当日发财报标的</td><td class="cost r">50 积分/篇</td></tr>
+    <tr><td class="ch">一页通更新<span class="ch-tag">邮件</span></td><td><span class="api">one-pager</span> 一页通（港美股 20/20 实测）</td><td>周频刷新持仓股</td><td>持仓 ∪ 高频自选 → 拉缓存组装</td><td class="cost r">50 积分/篇</td></tr>
+    <tr><td class="ch">周报<span class="ch-tag">邮件</span></td><td><b class="free">零新增</b>：复用周内已生成内容</td><td>—</td><td>纯组装：周度表现 + 本周机构观点 + 下周催化</td><td class="cost r free">0</td></tr>
+  </table>
+  <p class="note">实测状态（2026-09-14）：一页通港美股 20/20 覆盖且新鲜；线索每日更新但偏头部/科技股（非科技标的兜底）；美股个股看点停更，以线索替代。</p>
+  <div class="page-footer"><span>YF × Gangtise AI 能力接入方案</span><span>08</span></div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>03 · 实测结论</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<style>
+  body { padding: 150px 96px 0; }
+  h1 { font-family: var(--f-display); font-size: 60px; font-weight: 400; letter-spacing: -1.6px; margin: 20px 0 20px; }
+  .lead { font-size: 24px; color: var(--body); margin-bottom: 48px; max-width: 1500px; }
+  .lead b { color: var(--ink); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .col { border-radius: var(--r-xl); padding: 40px 44px; }
+  .col.ok { background: var(--surface-soft); }
+  .col.no { background: var(--surface-dark); color: var(--on-dark); }
+  .col h2 { font-size: 22px; font-weight: 600; letter-spacing: 0.1em; margin-bottom: 28px; }
+  .col.ok h2 { color: var(--yf-blue); }
+  .col.no h2 { color: var(--on-dark-soft); }
+  .row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 14px 0; border-bottom: 1px solid var(--hairline);
+    font-size: 21px;
+  }
+  .col.no .row { border-bottom-color: #2a2d33; }
+  .row:last-child { border-bottom: none; }
+  .row .note { font-size: 16px; color: var(--muted); text-align: right; max-width: 55%; }
+  .col.no .row .note { color: var(--on-dark-soft); }
+  .row b { font-weight: 600; }
+  .insight {
+    margin-top: 44px; padding: 24px 32px; border-radius: var(--r-lg);
+    background: #f0f6ff; font-size: 20px; color: var(--ink);
+  }
+  .insight b { color: var(--yf-blue); }
+</style>
+</head>
+<body>
+  <div class="page-tag"><span class="yf">03</span> · 实测结论</div>
+  <img class="page-logo" src="../assets/yf-brand/logo_blue@3x.png" style="height:36px" alt="">
+  <h1>14 项需求逐条调 API 验证后的结论</h1>
+  <p class="lead">规律很简单：<b>「用户指定证券」的能力，港美股适配都好；「平台预选题」的能力，偏 A 股。</b>这决定了我们接什么、不接什么。</p>
+  <div class="cols">
+    <div class="col ok">
+      <h2>可以直接用（港美股实测通过）</h2>
+      <div class="row"><b>公司一页通</b><span class="note">美股 5/5 成功，纯美股视角，1.4-1.9 万字</span></div>
+      <div class="row"><b>投研线索</b><span class="note">中文解读、每日更新；苹果/英伟达 7 天 16-24 条</span></div>
+      <div class="row"><b>个股看点（港股/A股）</b><span class="note">一句话总结，当日级更新（腾讯 09-12）</span></div>
+      <div class="row"><b>行情 / 财报 / 公告 / 研报</b><span class="note">港美股全覆盖</span></div>
+      <div class="row"><b>知识库 RAG</b><span class="note">命中外资研报原文 + 页码溯源</span></div>
+    </div>
+    <div class="col no">
+      <h2>受限 / 不可用（需要规避或定制）</h2>
+      <div class="row"><b>个股看点（美股）</b><span class="note">停更：10 只热门股仅 5 只有数据，停在 2025-06~10</span></div>
+      <div class="row"><b>热点话题</b><span class="note">严重偏 A 股：标的引用 A股 76.8% / 美股仅 6.0%</span></div>
+      <div class="row"><b>投资逻辑 / 同业对比</b><span class="note">仅 A股+港股，美股不覆盖</span></div>
+      <div class="row"><b>业绩点评 / 估值 / 盈利预测</b><span class="note">基本仅 A股</span></div>
+      <div class="row"><b>投研线索（非科技美股）</b><span class="note">覆盖偏科技股：奈飞/摩根大通 7 天零线索</span></div>
+    </div>
+  </div>
+  <div class="insight">结论：<b>P0 功能全部建立在「实测可用」的能力上</b>——一页通卡片、自选股摘要、AI 晨报；偏 A 股的热点话题降级为过滤版或定制版；异动 Push 一期只做行情事实版（机构解读二期补充）。</div>
+  <div class="page-footer"><span>YF × Gangtise AI 能力接入方案</span><span>03</span></div>
+</body>
+</html>

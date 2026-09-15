@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>09 · 风险与前置条件</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<style>
+  body { padding: 150px 96px 0; }
+  h1 { font-family: var(--f-display); font-size: 60px; font-weight: 400; letter-spacing: -1.6px; margin: 20px 0 56px; }
+  .risk {
+    display: grid; grid-template-columns: 200px 1fr 1fr; gap: 32px;
+    padding: 30px 0; border-bottom: 1px solid var(--hairline); align-items: start;
+  }
+  .risk:last-of-type { border-bottom: none; }
+  .risk .lv { font-size: 15px; font-weight: 600; letter-spacing: 0.1em; padding-top: 6px; }
+  .risk .lv .pill { display: inline-block; padding: 5px 16px; border-radius: var(--r-pill); }
+  .pill.red { background: #fdf2f3; color: var(--up); }
+  .pill.blue { background: #f0f6ff; color: var(--yf-blue); }
+  .risk h3 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+  .risk p { font-size: 19px; color: var(--body); line-height: 1.55; }
+  .risk .action p { color: var(--ink); }
+  .risk .action .lbl { font-size: 14px; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+  <div class="page-tag"><span class="yf">10</span> · 风险与前置条件</div>
+  <img class="page-logo" src="../assets/yf-brand/logo_blue@3x.png" style="height:36px" alt="">
+  <h1>两个 go/no-go 前置条件，一个合规待办</h1>
+
+  <div class="risk">
+    <div class="lv"><span class="pill red">GO / NO-GO</span></div>
+    <div>
+      <h3>缓存授权</h3>
+      <p>整个成本模型（降本 95%+）建立在「同一证券内容可多用户复用」之上。若 Gangtise 不允许缓存复用，成本测算与 P0 排序都要重做。</p>
+    </div>
+    <div class="action">
+      <div class="lbl">应对</div>
+      <p>写进合同条款：同日同证券内容全平台共享缓存。</p>
+    </div>
+  </div>
+
+  <div class="risk">
+    <div class="lv"><span class="pill red">GO / NO-GO</span></div>
+    <div>
+      <h3>美股个股看点已停更</h3>
+      <p>实测 10 只热门美股仅 5 只有数据、最新停在 2025-10；AAPL/META/JPM 无数据。P0-2 对美股用户成立的前提是该能力恢复维护。</p>
+    </div>
+    <div class="action">
+      <div class="lbl">应对</div>
+      <p>商务确认更新机制与覆盖名单；确认前美股摘要以投研线索（实测新鲜）驱动。</p>
+    </div>
+  </div>
+
+  <div class="risk">
+    <div class="lv"><span class="pill blue">合规评审</span></div>
+    <div>
+      <h3>AI 内容的投顾边界</h3>
+      <p>「投资逻辑 / 异动归因 / 风险提示」面向 C 端散户展示，需法务评估香港 SFC 语境下的投顾边界，确定免责声明与话术规范。</p>
+    </div>
+    <div class="action">
+      <div class="lbl">应对</div>
+      <p>灰度上线前完成合规评审；内容页统一署名「Gangtise 投研」+ 免责声明。</p>
+    </div>
+  </div>
+
+  <div class="page-footer"><span>YF × Gangtise AI 能力接入方案</span><span>10</span></div>
+</body>
+</html>

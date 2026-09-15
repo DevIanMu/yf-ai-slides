@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>04 · P0-1 个股 AI 一页通卡片</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<style>
+  /* ===== 页面布局 ===== */
+  .layout {
+    position: absolute; inset: 0;
+    display: flex; align-items: center;
+    padding: 0 96px;
+  }
+  .narrative {
+    width: 44%; flex: none;
+    padding-right: 64px;
+    position: relative;
+  }
+  .narrative .badge { margin-bottom: 28px; }
+  .narrative h1 {
+    font-family: var(--f-display);
+    font-size: 64px; font-weight: 400;
+    letter-spacing: -1.5px;
+    line-height: 1.15;
+    color: var(--on-dark);
+    margin-bottom: 48px;
+  }
+  .point { margin-bottom: 32px; }
+  .point h3 {
+    font-size: 22px; font-weight: 600;
+    color: var(--on-dark);
+    margin-bottom: 6px;
+  }
+  .point h3 .k { color: var(--yf-blue); margin-right: 10px; }
+  .point p {
+    font-size: 18px; line-height: 1.6;
+    color: var(--on-dark-soft);
+  }
+  .src-note {
+    margin-top: 44px;
+    font-size: 14px; color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .stage {
+    flex: 1;
+    display: flex; justify-content: center; align-items: center;
+  }
+
+  /* ===== iPhone 框（硬约束规格） ===== */
+  .iphone {
+    padding: 12px;
+    background: #000;
+    border-radius: 60px;
+    box-shadow: 0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .screen {
+    width: 393px; height: 852px;
+    border-radius: 48px;
+    overflow: hidden;
+    background: #fff;
+    position: relative;
+    color: var(--ink);
+    font-size: 14px;
+  }
+  .island {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    width: 124px; height: 36px;
+    background: #000; border-radius: 999px;
+    z-index: 20;
+  }
+  .statusbar {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 54px; padding: 14px 32px 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    background: #fff; z-index: 15;
+  }
+  .statusbar .time { font-size: 15px; font-weight: 600; color: var(--ink); }
+  .statusbar .icons { display: flex; align-items: center; gap: 6px; }
+  .home-indicator {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    width: 140px; height: 5px; border-radius: 999px;
+    background: rgba(0,0,0,0.3);
+    z-index: 20;
+  }
+
+  /* ===== App 骨架 ===== */
+  .app-body { position: absolute; top: 54px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; }
+
+  .app-header {
+    height: 48px; flex: none;
+    display: flex; align-items: center;
+    padding: 0 16px;
+    position: relative;
+    background: #fff;
+  }
+  .app-header .back { display: flex; align-items: center; cursor: pointer; }
+  .app-header .title {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    font-size: 17px; font-weight: 600;
+  }
+  .app-header .actions { margin-left: auto; display: flex; align-items: center; gap: 18px; cursor: pointer; }
+
+  .quote-tabs {
+    flex: none; height: 44px;
+    display: flex; align-items: stretch;
+    padding: 0 16px; gap: 22px;
+    border-bottom: 1px solid var(--hairline-soft);
+    background: #fff;
+  }
+  .quote-tabs span {
+    display: flex; align-items: center;
+    font-size: 15px; color: var(--muted);
+    cursor: pointer; position: relative;
+  }
+  .quote-tabs span.active { color: var(--ink); font-weight: 600; }
+  .quote-tabs span.active::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -1px;
+    height: 3px; border-radius: 2px; background: var(--yf-blue);
+  }
+
+  .scroll-area { flex: 1; overflow-y: auto; background: #fff; scrollbar-width: none; }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* ===== 大价格区 ===== */
+  .price-block { padding: 12px 16px 10px; }
+  .price-block .price-row { display: flex; align-items: baseline; gap: 12px; }
+  .price-block .big { font-family: var(--f-mono); font-size: 34px; font-weight: 500; letter-spacing: -0.5px; color: var(--up); }
+  .price-block .chg { font-family: var(--f-mono); font-size: 15px; color: var(--up); line-height: 1.4; }
+  .price-block .mkt { margin-top: 4px; font-size: 12px; color: var(--muted); }
+
+  /* ===== 报价明细网格（3列） ===== */
+  .quote-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    row-gap: 8px;
+    padding: 4px 16px 12px;
+    border-bottom: 8px solid var(--surface-soft);
+  }
+  .quote-grid .cell { display: flex; align-items: baseline; gap: 6px; font-size: 12px; }
+  .quote-grid .cell .lb { color: var(--muted); flex: none; }
+  .quote-grid .cell .vl { font-family: var(--f-mono); color: var(--ink); }
+
+  /* ===== 盘后条 ===== */
+  .after-bar {
+    margin: 10px 12px 0;
+    background: var(--surface-soft);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--muted);
+  }
+  .after-bar .tag { color: var(--ink); font-weight: 600; flex: none; }
+  .after-bar .num { font-family: var(--f-mono); color: var(--up); }
+  .after-bar .t { margin-left: auto; }
+
+  /* ===== K线区 ===== */
+  .kline { padding: 12px 0 0; border-bottom: 8px solid var(--surface-soft); }
+  .kline-tabs {
+    display: flex; align-items: center; gap: 18px;
+    padding: 0 16px 8px;
+    font-size: 13px; color: var(--muted);
+  }
+  .kline-tabs span { cursor: pointer; position: relative; }
+  .kline-tabs span.active { color: var(--ink); font-weight: 600; }
+  .kline-tabs span.active::after {
+    content: ''; position: absolute; left: 20%; right: 20%; bottom: -4px;
+    height: 2px; border-radius: 2px; background: var(--yf-blue);
+  }
+  .kline-chart { padding: 0 8px; }
+  .kline-ind {
+    display: flex; gap: 18px;
+    padding: 8px 16px 12px;
+    font-size: 12px; color: var(--muted);
+  }
+  .kline-ind span { cursor: pointer; }
+  .kline-ind span.active { color: var(--yf-blue); font-weight: 600; }
+
+  /* ===== 买卖盘 ===== */
+  .buysell { padding: 14px 16px 16px; border-bottom: 8px solid var(--surface-soft); }
+  .buysell .bs-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .buysell .bs-row .b { color: var(--up); }
+  .buysell .bs-row .s { color: var(--down); }
+  .buysell .bs-row .pct { font-family: var(--f-mono); margin-left: 8px; }
+  .buysell .bs-bar {
+    display: flex; height: 5px; border-radius: 3px; overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .buysell .bs-bar .bb { background: var(--up); }
+  .buysell .bs-bar .ss { background: var(--down); }
+  .buysell .bs-levels { display: flex; gap: 8px; }
+  .buysell .lvl {
+    flex: 1;
+    background: var(--surface-soft);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  .buysell .lvl .p { font-family: var(--f-mono); font-size: 15px; }
+  .buysell .lvl.b .p { color: var(--up); }
+  .buysell .lvl.s .p { color: var(--down); }
+  .buysell .lvl .q { font-family: var(--f-mono); font-size: 12px; color: var(--ink); }
+
+  /* ===== AI 一页通卡片 ===== */
+  .ai-card {
+    margin: 12px;
+    background: #fff;
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .ai-card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .ai-badge {
+    flex: none;
+    background: var(--yf-blue); color: #fff;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.04em;
+    padding: 3px 8px; border-radius: 100px;
+  }
+  .ai-card-head .ai-title { font-size: 15px; font-weight: 600; }
+  .ai-card-head .ai-src { margin-left: auto; font-size: 11px; color: var(--muted-soft); }
+
+  .ai-summary {
+    font-size: 13px; line-height: 1.65; color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .ai-bullets { list-style: none; margin-bottom: 4px; }
+  .ai-bullets li {
+    position: relative;
+    font-size: 12.5px; line-height: 1.6; color: var(--body);
+    padding-left: 14px; margin-bottom: 8px;
+  }
+  .ai-bullets li::before {
+    content: ''; position: absolute; left: 0; top: 8px;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--yf-blue);
+  }
+  .ai-bullets li b { color: var(--ink); font-weight: 600; }
+
+  .ai-toggle {
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+    margin-top: 8px; padding: 8px 0 2px;
+    border-top: 1px solid var(--hairline-soft);
+    font-size: 12.5px; font-weight: 600; color: var(--yf-blue);
+    cursor: pointer; user-select: none;
+    transition: opacity .15s;
+  }
+  .ai-toggle:hover { opacity: 0.75; }
+  .ai-toggle .chev { display: inline-block; transition: transform .25s; font-size: 11px; }
+  .ai-card.open .ai-toggle .chev { transform: rotate(180deg); }
+
+  .ai-full { display: none; margin-top: 12px; }
+  .ai-card.open .ai-full { display: block; }
+  .ai-sec { padding: 10px 0; border-top: 1px solid var(--hairline-soft); }
+  .ai-sec:first-child { border-top: none; padding-top: 2px; }
+  .ai-sec h4 {
+    font-size: 13px; font-weight: 600; color: var(--ink);
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .ai-sec h4::before {
+    content: ''; width: 3px; height: 12px; border-radius: 2px;
+    background: var(--yf-blue);
+  }
+  .ai-sec p { font-size: 12px; line-height: 1.65; color: var(--body); }
+  .ai-sec p b { color: var(--ink); font-weight: 600; }
+
+  .card-foot-note {
+    margin-top: 10px; padding-top: 8px;
+    border-top: 1px solid var(--hairline-soft);
+    font-size: 10.5px; color: var(--muted-soft); line-height: 1.5;
+  }
+
+  /* ===== 今日资金流向 ===== */
+  .moneyflow { padding: 6px 16px 20px; }
+  .moneyflow .mf-head {
+    display: flex; align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .moneyflow .mf-title { font-size: 15px; font-weight: 600; }
+  .moneyflow .mf-time { margin-left: auto; font-size: 10.5px; color: var(--muted-soft); text-align: right; line-height: 1.5; }
+  .moneyflow .mf-body { display: flex; align-items: center; gap: 18px; padding-top: 8px; }
+  .moneyflow .donut { flex: none; }
+  .moneyflow .mf-legend { flex: 1; }
+  .moneyflow .mf-line {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--body);
+    padding: 6px 0;
+  }
+  .moneyflow .mf-line .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .moneyflow .mf-line .v { font-family: var(--f-mono); color: var(--ink); margin-left: auto; }
+  .moneyflow .mf-line .p { font-family: var(--f-mono); color: var(--muted); width: 36px; text-align: right; }
+
+  /* ===== 底部 tab bar ===== */
+  .tabbar {
+    flex: none; height: 58px;
+    display: flex;
+    border-top: 1px solid var(--hairline-soft);
+    background: #fff;
+    padding-bottom: 4px;
+  }
+  .tabbar .tab {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    font-size: 10px; color: var(--muted);
+    cursor: pointer;
+  }
+  .tabbar .tab.active { color: var(--yf-blue); }
+  .tabbar .tab svg { display: block; }
+</style>
+</head>
+<body class="dark">
+
+<div class="page-tag"><span class="yf">04</span> · P0-1 功能演示</div>
+<img class="page-logo" src="../assets/yf-brand/logo_across_white@3x.png" alt="云锋有鱼">
+
+<div class="layout">
+  <!-- 左侧叙述区 -->
+  <section class="narrative">
+    <span class="badge blue">P0-1</span>
+    <h1>个股页的一页通<br>AI 卡片</h1>
+
+    <div class="point">
+      <h3><span class="k">场景</span>看行情时，先回答「要不要看」</h3>
+      <p>用户打开个股页，想快速知道「这公司是干什么的、值不值得看」。</p>
+    </div>
+    <div class="point">
+      <h3><span class="k">实现</span>50 积分/篇，默认折叠呈现</h3>
+      <p>一页通 50 积分/篇，默认折叠为「一句话结论 + 3 要点」，点击展开章节。卡片位于买卖盘之下、资金流向之上——行情决策动线的自然延伸。</p>
+    </div>
+    <div class="point">
+      <h3><span class="k">成本</span>证券级共享缓存</h3>
+      <p>全平台同一只股票一天只生成一次，个性化成本趋近于零。</p>
+    </div>
+
+    <div class="src-note">右侧原型内容为 Gangtise API 真实返回（AAPL.O 一页通，2026-09-13 生成）</div>
+  </section>
+
+  <!-- 右侧 iPhone 原型 -->
+  <section class="stage">
+    <div class="iphone">
+      <div class="screen">
+        <div class="island"></div>
+
+        <!-- 状态栏 -->
+        <div class="statusbar">
+          <span class="time">14:29</span>
+          <span class="icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="#0a0b0d"><rect x="0" y="7" width="3" height="4" rx="0.5"/><rect x="4.5" y="5" width="3" height="6" rx="0.5"/><rect x="9" y="2.5" width="3" height="8.5" rx="0.5"/><rect x="13.5" y="0" width="3" height="11" rx="0.5"/></svg>
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke="#0a0b0d" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 3.5a10 10 0 0 1 13 0"/><path d="M4 6.2a6.2 6.2 0 0 1 8 0"/><circle cx="8" cy="9.2" r="1.2" fill="#0a0b0d" stroke="none"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="#0a0b0d" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="#0a0b0d"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="#0a0b0d" fill-opacity="0.4"/></svg>
+          </span>
+        </div>
+
+        <div class="app-body">
+          <!-- 头部 -->
+          <div class="app-header">
+            <span class="back">
+              <svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="#0a0b0d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1L1 9l8 8"/></svg>
+            </span>
+            <span class="title">苹果(AAPL)</span>
+            <span class="actions">
+              <svg width="19" height="19" viewBox="0 0 19 19" fill="none" stroke="#0a0b0d" stroke-width="1.8" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l4.5 4.5"/></svg>
+              <svg width="18" height="19" viewBox="0 0 18 19" fill="none" stroke="#0a0b0d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l4 4-4 4"/><path d="M16 8H6"/><path d="M8 1H3a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h5"/></svg>
+            </span>
+          </div>
+
+          <!-- tab 栏 -->
+          <div class="quote-tabs">
+            <span class="active">报价</span><span>ETF</span><span>分析</span><span>资讯</span><span>财务</span><span>简况</span>
+          </div>
+
+          <!-- 内容滚动区 -->
+          <div class="scroll-area" id="scrollArea">
+
+            <!-- 大价格区 -->
+            <div class="price-block">
+              <div class="price-row">
+                <span class="big">332.27</span>
+                <span class="chg">+5.71<br>+1.75%</span>
+              </div>
+              <div class="mkt">已收盘&nbsp;&nbsp;09/11 16:00 EDT</div>
+            </div>
+
+            <!-- 报价明细网格 -->
+            <div class="quote-grid">
+              <div class="cell"><span class="lb">今开</span><span class="vl">327.180</span></div>
+              <div class="cell"><span class="lb">最高</span><span class="vl" style="color:var(--up)">333.500</span></div>
+              <div class="cell"><span class="lb">成交额</span><span class="vl">98.21亿</span></div>
+              <div class="cell"><span class="lb">昨收</span><span class="vl">326.560</span></div>
+              <div class="cell"><span class="lb">最低</span><span class="vl" style="color:var(--down)">326.400</span></div>
+              <div class="cell"><span class="lb">成交量</span><span class="vl">2,958万股</span></div>
+              <div class="cell"><span class="lb">市盈率<sub>TTM</sub></span><span class="vl">33.61</span></div>
+              <div class="cell"><span class="lb">每手</span><span class="vl">1股</span></div>
+              <div class="cell"><span class="lb">换手率</span><span class="vl">0.19%</span></div>
+            </div>
+
+            <!-- 盘后条 -->
+            <div class="after-bar">
+              <span class="tag">盘后</span>
+              <span class="num">332.85&nbsp;&nbsp;+0.58&nbsp;&nbsp;+0.17%</span>
+              <span class="t">09/11 20:00 EDT</span>
+            </div>
+
+            <!-- K线区 -->
+            <div class="kline">
+              <div class="kline-tabs">
+                <span>盘后</span><span>五日</span><span class="active">日K</span><span>周K</span><span>月K</span><span>分钟</span>
+              </div>
+              <div class="kline-chart">
+                <svg width="377" height="150" viewBox="0 0 377 150" fill="none">
+                  <!-- 网格线 -->
+                  <line x1="0" y1="30" x2="377" y2="30" stroke="#eef0f3"/>
+                  <line x1="0" y1="60" x2="377" y2="60" stroke="#eef0f3"/>
+                  <line x1="0" y1="90" x2="377" y2="90" stroke="#eef0f3"/>
+                  <!-- 昨收虚线 -->
+                  <line x1="0" y1="75" x2="377" y2="75" stroke="#a8acb3" stroke-dasharray="4 4"/>
+                  <!-- K线（蜡烛） -->
+                  <g stroke-width="1">
+                    <line x1="20" y1="95" x2="20" y2="115" stroke="#05b169"/><rect x="16" y="100" width="8" height="12" fill="#05b169"/>
+                    <line x1="42" y1="88" x2="42" y2="108" stroke="#05b169"/><rect x="38" y="92" width="8" height="12" fill="#05b169"/>
+                    <line x1="64" y1="80" x2="64" y2="102" stroke="#cf202f"/><rect x="60" y="84" width="8" height="14" fill="#cf202f"/>
+                    <line x1="86" y1="72" x2="86" y2="96" stroke="#cf202f"/><rect x="82" y="76" width="8" height="16" fill="#cf202f"/>
+                    <line x1="108" y1="78" x2="108" y2="98" stroke="#05b169"/><rect x="104" y="82" width="8" height="12" fill="#05b169"/>
+                    <line x1="130" y1="68" x2="130" y2="90" stroke="#cf202f"/><rect x="126" y="72" width="8" height="14" fill="#cf202f"/>
+                    <line x1="152" y1="60" x2="152" y2="84" stroke="#cf202f"/><rect x="148" y="64" width="8" height="16" fill="#cf202f"/>
+                    <line x1="174" y1="66" x2="174" y2="88" stroke="#05b169"/><rect x="170" y="70" width="8" height="14" fill="#05b169"/>
+                    <line x1="196" y1="58" x2="196" y2="80" stroke="#cf202f"/><rect x="192" y="62" width="8" height="14" fill="#cf202f"/>
+                    <line x1="218" y1="50" x2="218" y2="74" stroke="#cf202f"/><rect x="214" y="54" width="8" height="16" fill="#cf202f"/>
+                    <line x1="240" y1="56" x2="240" y2="78" stroke="#05b169"/><rect x="236" y="60" width="8" height="14" fill="#05b169"/>
+                    <line x1="262" y1="46" x2="262" y2="70" stroke="#cf202f"/><rect x="258" y="50" width="8" height="16" fill="#cf202f"/>
+                    <line x1="284" y1="40" x2="284" y2="64" stroke="#cf202f"/><rect x="280" y="44" width="8" height="16" fill="#cf202f"/>
+                    <line x1="306" y1="34" x2="306" y2="56" stroke="#cf202f"/><rect x="302" y="38" width="8" height="14" fill="#cf202f"/>
+                    <line x1="328" y1="28" x2="328" y2="52" stroke="#cf202f"/><rect x="324" y="32" width="8" height="16" fill="#cf202f"/>
+                    <line x1="350" y1="22" x2="350" y2="46" stroke="#cf202f"/><rect x="346" y="26" width="8" height="16" fill="#cf202f"/>
+                  </g>
+                  <!-- VOL 柱 -->
+                  <g>
+                    <rect x="16" y="132" width="8" height="10" fill="#05b169" opacity="0.7"/>
+                    <rect x="38" y="130" width="8" height="12" fill="#05b169" opacity="0.7"/>
+                    <rect x="60" y="126" width="8" height="16" fill="#cf202f" opacity="0.7"/>
+                    <rect x="82" y="122" width="8" height="20" fill="#cf202f" opacity="0.7"/>
+                    <rect x="104" y="130" width="8" height="12" fill="#05b169" opacity="0.7"/>
+                    <rect x="126" y="126" width="8" height="16" fill="#cf202f" opacity="0.7"/>
+                    <rect x="148" y="124" width="8" height="18" fill="#cf202f" opacity="0.7"/>
+                    <rect x="170" y="130" width="8" height="12" fill="#05b169" opacity="0.7"/>
+                    <rect x="192" y="126" width="8" height="16" fill="#cf202f" opacity="0.7"/>
+                    <rect x="214" y="120" width="8" height="22" fill="#cf202f" opacity="0.7"/>
+                    <rect x="236" y="128" width="8" height="14" fill="#05b169" opacity="0.7"/>
+                    <rect x="258" y="122" width="8" height="20" fill="#cf202f" opacity="0.7"/>
+                    <rect x="280" y="118" width="8" height="24" fill="#cf202f" opacity="0.7"/>
+                    <rect x="302" y="122" width="8" height="20" fill="#cf202f" opacity="0.7"/>
+                    <rect x="324" y="116" width="8" height="26" fill="#cf202f" opacity="0.7"/>
+                    <rect x="346" y="112" width="8" height="30" fill="#cf202f" opacity="0.7"/>
+                  </g>
+                  <text x="0" y="110" font-size="9" fill="#a8acb3" font-family="JetBrains Mono, monospace">VOL 2,958万股</text>
+                </svg>
+              </div>
+              <div class="kline-ind">
+                <span class="active">VOL</span><span>MACD</span><span>KDJ</span><span>RSI</span>
+              </div>
+            </div>
+
+            <!-- 买卖盘 -->
+            <div class="buysell" id="buySell">
+              <div class="bs-row">
+                <span class="b">买盘<span class="pct">46.32%</span></span>
+                <span class="s">卖盘<span class="pct">53.68%</span></span>
+              </div>
+              <div class="bs-bar">
+                <div class="bb" style="width:46.32%"></div>
+                <div class="ss" style="width:53.68%"></div>
+              </div>
+              <div class="bs-levels">
+                <div class="lvl b"><span class="p">332.25</span><span class="q">68</span></div>
+                <div class="lvl s"><span class="p">332.30</span><span class="q">493</span></div>
+              </div>
+            </div>
+
+            <!-- AI 一页通卡片（买卖盘之下、资金流向之上） -->
+            <div class="ai-card" id="aiCard">
+              <div class="ai-card-head">
+                <span class="ai-badge">AI 投研</span>
+                <span class="ai-title">一页通 · 苹果</span>
+                <span class="ai-src">来源 Gangtise</span>
+              </div>
+
+              <p class="ai-summary">全球最大消费电子公司：25 亿台活跃设备构筑生态闭环，服务业务以 <b>75.4%</b> 毛利率贡献集团 42% 毛利，估值锚点正从硬件销量向「高毛利服务 + AI 入口」迁移。</p>
+
+              <ul class="ai-bullets">
+                <li><b>3QFY26 营收 1,094 亿美元（+16.4%）超预期</b>，iPhone 连续 17 个月销量正增长，服务收入 +12.1%。</li>
+                <li><b>首款折叠屏 iPhone Duo 发布，起售价 1,999 美元</b>低于市场预期，大摩预计开售后快速售罄。</li>
+                <li><b>存储成本上行压制毛利率</b>：4QFY26 指引 47%–48%，环比下滑约 160bps。</li>
+              </ul>
+
+              <div class="ai-full">
+                <div class="ai-sec">
+                  <h4>公司速览</h4>
+                  <p>业务覆盖 iPhone / Mac / iPad / 可穿戴，并基于 25 亿台活跃装机设备构建广告、云服务、支付等服务生态。高端手机市场维持约 120% 行业溢价；2026 年 9 月 John Ternus 正式接任 CEO。</p>
+                </div>
+                <div class="ai-sec">
+                  <h4>短期投资逻辑</h4>
+                  <p>iPhone 18 Pro 9/12 开启预购，大摩预计 CY26 备货量逼近 2.7 亿部（+7%）；Duo 10/16 预购，供不应求或形成品牌催化；若存储涨价放缓、实际毛利率高于指引，将构成正预期差。</p>
+                </div>
+                <div class="ai-sec">
+                  <h4>长期投资逻辑</h4>
+                  <p>服务收入 FY17–FY25 复合增速约 16%，75.4% 毛利率贡献 42% 集团毛利；Apple Intelligence 端侧架构 + 25 亿设备打造 AI 原生入口；折叠屏打开超高端增量，2027 年市占率或达 40%。</p>
+                </div>
+                <div class="ai-sec">
+                  <h4>未来催化</h4>
+                  <p>9/12 iPhone 18 Pro 预购、9/18 正式发售，首周数据验证需求强度；10/16 Duo 预购，关注发货等待时间；10 月下旬 FY4Q26 财报，验证存储成本下的实际毛利率。</p>
+                </div>
+                <div class="ai-sec">
+                  <h4>风险提示</h4>
+                  <p>存储成本占 BOM 比例已升至约 34%，或继续侵蚀硬件毛利率；美国 DOJ 反垄断诉讼与欧盟 DMA 带来监管压力；Siri AI 落地节奏与算力成本回收路径仍不确定。</p>
+                </div>
+                <div class="card-foot-note">内容由 Gangtise AI 生成（AAPL.O · 2026-09-13），仅供研究参考，不构成投资建议。</div>
+              </div>
+
+              <div class="ai-toggle" id="aiToggle">
+                <span id="aiToggleText">查看完整解读</span><span class="chev">▾</span>
+              </div>
+            </div>
+
+            <!-- 今日资金流向 -->
+            <div class="moneyflow">
+              <div class="mf-head">
+                <span class="mf-title">今日资金流向</span>
+                <span class="mf-time">更新时间：2026-09-11<br>（万元 | USD）</span>
+              </div>
+              <div class="mf-body">
+                <svg class="donut" width="120" height="120" viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="46" fill="none" stroke="#eef0f3" stroke-width="16"/>
+                  <circle cx="60" cy="60" r="46" fill="none" stroke="#cf202f" stroke-width="16"
+                          stroke-dasharray="156.1 289.0" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+                  <circle cx="60" cy="60" r="46" fill="none" stroke="#05b169" stroke-width="16"
+                          stroke-dasharray="132.9 289.0" stroke-dashoffset="-156.1" transform="rotate(-90 60 60)"/>
+                  <text x="60" y="58" text-anchor="middle" font-size="16" font-weight="600" fill="#cf202f" font-family="JetBrains Mono, monospace">+1,262</text>
+                  <text x="60" y="76" text-anchor="middle" font-size="10" fill="#7c828a">净流入</text>
+                </svg>
+                <div class="mf-legend">
+                  <div class="mf-line">
+                    <span class="dot" style="background:var(--up)"></span>流入
+                    <span class="v">8,420.5</span><span class="p">54%</span>
+                  </div>
+                  <div class="mf-line">
+                    <span class="dot" style="background:var(--down)"></span>流出
+                    <span class="v">7,158.3</span><span class="p">46%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 底部 tab bar -->
+          <div class="tabbar">
+            <div class="tab active">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14l4-5 3.5 3.5L14 6l4 4"/></svg>
+              行情
+            </div>
+            <div class="tab">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h14M3 8l3-4M17 12H3m14 0l-3 4"/></svg>
+              交易
+            </div>
+            <div class="tab">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="15" height="11" rx="2.5"/><path d="M13.5 10.5h.01"/></svg>
+              理财
+            </div>
+            <div class="tab">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2.5"/><path d="M6.5 7.5h7M6.5 10.5h7M6.5 13.5h4"/></svg>
+              资讯
+            </div>
+            <div class="tab">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="7" r="3.2"/><path d="M3.5 17a6.5 6.5 0 0 1 13 0"/></svg>
+              我的
+            </div>
+          </div>
+        </div>
+
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="page-footer">
+  <span>YF × Gangtise AI 能力接入方案</span>
+  <span>数据来源：Gangtise OpenAPI 实测</span>
+</div>
+
+<script>
+  (function () {
+    var area = document.getElementById('scrollArea');
+    var card = document.getElementById('aiCard');
+    var anchor = document.getElementById('buySell');
+    var toggle = document.getElementById('aiToggle');
+    var text = document.getElementById('aiToggleText');
+
+    // 初始滚动位置：让「买卖盘 + AI 卡片」一屏可见
+    function scrollToEl(el) {
+      area.scrollTop = el.offsetTop - area.offsetTop - 8;
+    }
+    scrollToEl(anchor);
+
+    toggle.addEventListener('click', function () {
+      var open = card.classList.toggle('open');
+      text.textContent = open ? '收起解读' : '查看完整解读';
+      if (open) scrollToEl(card);
+    });
+  })();
+</script>
+
+</body>
+</html>

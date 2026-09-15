@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>01 · 封面</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<style>
+  body { display: flex; flex-direction: column; justify-content: center; padding: 0 160px; }
+  .cover-logo { height: 64px; width: auto; margin-bottom: 120px; align-self: flex-start; }
+  .kicker {
+    font-size: 18px; font-weight: 600; letter-spacing: 0.22em;
+    color: var(--yf-blue); margin-bottom: 32px;
+  }
+  h1 {
+    font-family: var(--f-display);
+    font-size: 96px; font-weight: 400; line-height: 1.08; letter-spacing: -2.5px;
+    max-width: 1400px;
+  }
+  .sub {
+    margin-top: 40px; font-size: 28px; color: var(--on-dark-soft); max-width: 1100px;
+  }
+  .meta {
+    margin-top: 120px; display: flex; gap: 64px;
+    font-size: 18px; color: var(--on-dark-soft);
+  }
+  .meta b { color: var(--on-dark); font-weight: 600; }
+  .accent-line {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 8px;
+    background: var(--yf-blue);
+  }
+</style>
+</head>
+<body class="dark">
+  <div class="accent-line"></div>
+  <img class="cover-logo" src="../assets/yf-brand/logo_across_white@3x.png" alt="云锋有鱼">
+  <div class="kicker">AI 能力接入 · 产品化方案汇报</div>
+  <h1>用 Gangtise AI 投研能力，<br>升级有鱼的行情与资讯体验</h1>
+  <div class="meta">
+    <span><b>汇报人</b>　行情与资讯产品</span>
+    <span><b>日期</b>　<span class="num">2026-09-14</span></span>
+    <span><b>依据</b>　API 实测验证（非供应商材料）</span>
+  </div>
+</body>
+</html>

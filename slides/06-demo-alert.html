@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>06 · P0-3 AI 晨报/晚报推送</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  body { overflow: hidden; }
+
+  /* ===== 布局 ===== */
+  .stage {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; align-items: center;
+    padding: 0 96px;
+  }
+  .narrative { width: 44%; padding-right: 48px; }
+  .phone-side {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    height: 100%;
+  }
+
+  /* ===== 左侧叙述区 ===== */
+  .narrative .badge { margin-bottom: 28px; }
+  .narrative h1 {
+    font-family: var(--f-display);
+    font-size: 64px; font-weight: 400;
+    letter-spacing: -1.5px; line-height: 1.15;
+    margin-bottom: 56px;
+  }
+  .points { display: flex; flex-direction: column; gap: 36px; }
+  .point .pt-title {
+    font-size: 22px; font-weight: 600; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .point .pt-title .k {
+    font-family: var(--f-mono); font-size: 14px; font-weight: 500;
+    color: var(--yf-blue); letter-spacing: 0.08em;
+  }
+  .point .pt-desc { font-size: 18px; color: var(--on-dark-soft); line-height: 1.6; }
+  .narrative .foot-note {
+    margin-top: 56px; font-size: 14px; color: var(--muted);
+  }
+
+  /* ===== iPhone 框 ===== */
+  .iphone {
+    padding: 12px; background: #000; border-radius: 60px;
+    box-shadow: 0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .screen {
+    width: 393px; height: 852px; border-radius: 48px;
+    overflow: hidden; position: relative;
+    background: var(--surface-dark-elevated);
+  }
+  .island {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    width: 124px; height: 36px; background: #000; border-radius: 999px;
+    z-index: 30;
+  }
+  .statusbar {
+    position: absolute; top: 0; left: 0; right: 0; height: 54px;
+    padding: 0 32px; display: flex; align-items: center; justify-content: space-between;
+    z-index: 25;
+  }
+  .statusbar .time {
+    font-family: var(--f-body); font-size: 15px; font-weight: 600;
+  }
+  .statusbar .icons { display: flex; align-items: center; gap: 6px; }
+  .home-indicator {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    width: 140px; height: 5px; border-radius: 999px;
+    z-index: 30;
+  }
+
+  /* ===== 状态切换 ===== */
+  .state {
+    position: absolute; top: 54px; left: 0; right: 0; bottom: 34px;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .state-a { z-index: 10; }
+  .state-b {
+    z-index: 20; opacity: 0; pointer-events: none;
+    transform: translateX(48px);
+    top: 0; bottom: 0; padding-top: 54px; padding-bottom: 34px;
+  }
+  .screen.show-b .state-b { opacity: 1; pointer-events: auto; transform: translateX(0); }
+  .screen.show-b .state-a { opacity: 0; pointer-events: none; transform: translateX(-24px); }
+
+  /* ===== 状态 A：锁屏 Push ===== */
+  .state-a {
+    background: var(--surface-dark-elevated);
+    display: flex; flex-direction: column; align-items: center;
+    color: var(--on-dark);
+  }
+  .lock-clock { margin-top: 64px; text-align: center; }
+  .lock-clock .lc-time {
+    font-family: var(--f-display); font-size: 72px; font-weight: 400;
+    letter-spacing: -2px; line-height: 1;
+  }
+  .lock-clock .lc-date { font-size: 15px; color: var(--on-dark-soft); margin-top: 8px; }
+  .push-card {
+    margin-top: 72px;
+    width: 353px;
+    background: #fff; color: var(--ink);
+    border-radius: 16px; padding: 14px 16px;
+    display: flex; gap: 12px;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    animation: breathe 2s ease-in-out infinite;
+    transition: box-shadow 0.2s ease;
+  }
+  .push-card:hover { box-shadow: 0 12px 40px rgba(25,110,255,0.35); }
+  @keyframes breathe {
+    0%, 100% { transform: translateY(-4px); }
+    50%      { transform: translateY(4px); }
+  }
+  .push-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    overflow: hidden; flex-shrink: 0;
+    background: #fff; border: 1px solid var(--hairline-soft);
+  }
+  .push-icon img { width: 100%; height: 100%; object-fit: cover; }
+  .push-body { flex: 1; min-width: 0; }
+  .push-meta {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--muted); margin-bottom: 2px;
+  }
+  .push-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .push-text { font-size: 13px; color: var(--body); line-height: 1.45; }
+  .push-hint {
+    margin-top: auto; margin-bottom: 24px;
+    font-size: 13px; color: var(--on-dark-soft);
+  }
+
+  /* ===== 状态 B：晨报/晚报详情页 ===== */
+  .state-b {
+    background: var(--canvas); color: var(--ink);
+    display: flex; flex-direction: column;
+  }
+  .app-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 20px 8px;
+  }
+  .back-btn {
+    font-size: 20px; color: var(--yf-blue); cursor: pointer;
+    padding: 2px 6px; border-radius: 8px; line-height: 1;
+    transition: background 0.15s ease;
+  }
+  .back-btn:hover { background: var(--surface-strong); }
+  .app-header .mail-title { font-size: 16px; font-weight: 600; }
+
+  /* 晨报/晚报 切换胶囊 */
+  .seg-wrap { padding: 2px 20px 12px; }
+  .seg {
+    display: flex; background: var(--surface-strong);
+    border-radius: var(--r-pill); padding: 3px;
+  }
+  .seg button {
+    flex: 1; border: none; background: transparent; cursor: pointer;
+    font-family: var(--f-body); font-size: 13px; font-weight: 600;
+    color: var(--muted); padding: 7px 0; border-radius: var(--r-pill);
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .seg button.active {
+    background: #fff; color: var(--ink);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  }
+
+  .state-b .scroll { flex: 1; padding: 0 20px; overflow: hidden; }
+  .section-title {
+    font-size: 14px; font-weight: 600; margin-bottom: 10px;
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  .section-title .cnt { color: var(--muted); font-weight: 400; font-size: 12px; }
+
+  .brief-item {
+    border: 1px solid var(--hairline-soft);
+    border-radius: 16px; padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .brief-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  .brief-stock { font-size: 14px; font-weight: 600; }
+  .brief-stock .code {
+    font-family: var(--f-mono); font-size: 11px; font-weight: 500;
+    color: var(--muted); margin-left: 6px;
+  }
+  .brief-pct { font-size: 13px; }
+  .brief-sum {
+    font-size: 12px; color: var(--body); line-height: 1.55;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 5px;
+  }
+  .brief-src { font-size: 11px; color: var(--muted); }
+
+  .hot-item {
+    background: var(--surface-soft);
+    border-radius: 16px; padding: 12px 14px;
+  }
+  .hot-item .hot-tag {
+    font-size: 10px; font-weight: 600;
+    color: var(--yf-blue);
+    margin-bottom: 5px; display: block;
+    letter-spacing: 0.05em;
+  }
+  .hot-item .brief-sum { margin-bottom: 5px; }
+
+  .cta-area { padding: 10px 20px 4px; text-align: center; }
+  .cta-btn {
+    display: block; width: 100%;
+    background: var(--yf-blue); color: #fff;
+    border: none; border-radius: var(--r-pill);
+    font-size: 15px; font-weight: 600; font-family: var(--f-body);
+    padding: 13px 0; cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .cta-btn:hover { background: var(--yf-blue-active); }
+  .cta-link {
+    display: inline-block; margin-top: 10px;
+    font-size: 13px; color: var(--yf-blue); cursor: pointer;
+  }
+  .cta-link:hover { text-decoration: underline; }
+
+  /* 状态 B 内状态栏/主指示器用深色 */
+  .screen .statusbar { color: var(--on-dark); transition: color 0.35s ease; }
+  .screen .home-indicator { background: rgba(255,255,255,0.85); transition: background 0.35s ease; }
+  .screen.show-b .statusbar { color: var(--ink); }
+  .screen.show-b .home-indicator { background: rgba(0,0,0,0.85); }
+</style>
+</head>
+<body class="dark">
+
+<div class="page-tag">06 · P0-3 功能演示</div>
+<img class="page-logo" src="../assets/yf-brand/logo_across_white@3x.png" alt="YF">
+
+<div class="stage">
+  <!-- 左侧叙述区 -->
+  <div class="narrative">
+    <span class="badge blue">P0-3</span>
+    <h1>每天一早，<br>自选股主动来报到</h1>
+    <div class="points">
+      <div class="point">
+        <div class="pt-title"><span class="k">场景</span>开盘前的第一问</div>
+        <div class="pt-desc">用户早上想知道「我的自选股隔夜发生了什么、今天看什么」。</div>
+      </div>
+      <div class="point">
+        <div class="pt-title"><span class="k">实现</span>定时组装，一次触达</div>
+        <div class="pt-desc">每天 8:00 定时组装——投研线索快照 + 个股看点（港股）+ 过滤版热点，Push 推送并同步站内信。</div>
+      </div>
+      <div class="point">
+        <div class="pt-title"><span class="k">成本</span>零新增积分</div>
+        <div class="pt-desc">全部复用证券级日缓存，零新增积分；晚报同源，收盘后推送当日复盘。</div>
+      </div>
+    </div>
+    <div class="foot-note">右侧原型内容为 Gangtise API 真实返回（2026-09 实测）</div>
+  </div>
+
+  <!-- 右侧 iPhone 原型 -->
+  <div class="phone-side">
+    <div class="iphone">
+      <div class="screen" id="screen">
+        <div class="island"></div>
+        <div class="statusbar">
+          <span class="time">8:00</span>
+          <span class="icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+            <svg width="16" height="11" viewBox="0 0 16 12" fill="currentColor"><path d="M8 9.6a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2zM8 5.4c1.8 0 3.4.7 4.6 1.9l-1.5 1.5A4.4 4.4 0 0 0 8 7.5a4.4 4.4 0 0 0-3.1 1.3L3.4 7.3A6.4 6.4 0 0 1 8 5.4zM8 1c2.9 0 5.5 1.2 7.4 3.1l-1.5 1.5A8.3 8.3 0 0 0 8 3.1a8.3 8.3 0 0 0-5.9 2.5L.6 4.1A10.4 10.4 0 0 1 8 1z"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="8" rx="2" fill="currentColor"/><path d="M23.5 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity="0.4"/></svg>
+          </span>
+        </div>
+
+        <!-- 状态 A：锁屏 Push -->
+        <div class="state state-a" id="stateA">
+          <div class="lock-clock">
+            <div class="lc-time">8:00</div>
+            <div class="lc-date">9月15日 星期二</div>
+          </div>
+          <div class="push-card" id="pushCard" role="button" tabindex="0">
+            <div class="push-icon">
+              <img src="../assets/yf-brand/logo_blue@3x.png" alt="YF">
+            </div>
+            <div class="push-body">
+              <div class="push-meta"><span>云锋有鱼</span><span>现在</span></div>
+              <div class="push-title">AI 晨报：你的自选股隔夜动态</div>
+              <div class="push-text">英伟达获机构集中解读、腾讯广告强变现，3 条关注事项已生成</div>
+            </div>
+          </div>
+          <div class="push-hint">点击 Push 查看晨报</div>
+        </div>
+
+        <!-- 状态 B：站内信晨报详情页 -->
+        <div class="state state-b" id="stateB">
+          <div class="app-header">
+            <span class="back-btn" id="backBtn" role="button" tabindex="0">←</span>
+            <span class="mail-title" id="mailTitle">AI 晨报 · 9月15日</span>
+          </div>
+          <div class="seg-wrap">
+            <div class="seg" id="seg">
+              <button class="active" data-mode="morning">晨报</button>
+              <button data-mode="evening">晚报</button>
+            </div>
+          </div>
+          <div class="scroll">
+            <div class="section-title"><span id="secTitle">隔夜关注</span><span class="cnt">· 3 条</span></div>
+            <div id="briefList"></div>
+            <div class="section-title"><span>市场热点</span><span class="cnt">全平台共享</span></div>
+            <div class="hot-item">
+              <span class="hot-tag">热点话题 · 过滤版</span>
+              <div class="brief-sum" id="hotText"></div>
+              <div class="brief-src" id="hotSrc"></div>
+            </div>
+          </div>
+          <div class="cta-area">
+            <button class="cta-btn" id="ctaBtn">查看今日自选股</button>
+            <span class="cta-link" id="subLink">订阅晚报</span>
+          </div>
+        </div>
+
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-footer">
+  <span>YF × Gangtise AI 能力接入方案</span>
+  <span>数据来源：Gangtise OpenAPI 实测</span>
+</div>
+
+<script>
+(function () {
+  var screen = document.getElementById('screen');
+  var pushCard = document.getElementById('pushCard');
+  var backBtn = document.getElementById('backBtn');
+  var stateB = document.getElementById('stateB');
+
+  function showB() { screen.classList.add('show-b'); }
+  function showA() { screen.classList.remove('show-b'); }
+
+  pushCard.addEventListener('click', showB);
+  pushCard.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showB(); }
+  });
+
+  backBtn.addEventListener('click', function (e) { e.stopPropagation(); showA(); });
+  backBtn.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); showA(); }
+  });
+
+  // 状态 B 空白处再次点击也可返回（胶囊/CTA/链接除外），方便反复演示
+  stateB.addEventListener('click', function (e) {
+    if (e.target.closest('.cta-btn') || e.target.closest('.cta-link') ||
+        e.target.closest('.seg') || e.target.closest('.back-btn')) return;
+    showA();
+  });
+
+  /* ===== 晨报 / 晚报数据（Gangtise API 实测口径，同一信源两种话术） ===== */
+  var DATA = {
+    morning: {
+      title: 'AI 晨报 · 9月15日',
+      sec: '隔夜关注',
+      items: [
+        { name: '英伟达', code: 'NVDA', pct: '+8.74%', dir: 'up',
+          sum: '国联民生纪要：英伟达明确储能是下一代 AI 工厂必要组成部分，北美配储订单加速落地',
+          src: '电话会议纪要 · 09-14' },
+        { name: '苹果', code: 'AAPL', pct: '+0.36%', dir: 'up',
+          sum: 'KeyBanc：预测 iPhone 18 Pro 涨价 150 美元，维持「减持」评级；美银维持买入、目标价 380 美元',
+          src: '机构观点 · 09-14' },
+        { name: '腾讯控股', code: '00700', pct: '+1.83%', dir: 'up',
+          sum: 'AI 投入压制已定价，广告强劲与 WorkBuddy 变现催化估值修复',
+          src: '个股看点 · 09-12' }
+      ],
+      hot: '创新药：康方生物 HARMONI-2 OS 期中分析今日披露；美联储 9/16 议息',
+      hotSrc: '热点话题 · 09-15',
+      cta: '查看今日自选股',
+      link: '订阅晚报'
+    },
+    evening: {
+      title: 'AI 晚报 · 9月14日',
+      sec: '今日回顾',
+      items: [
+        { name: '英伟达', code: 'NVDA', pct: '+8.74%', dir: 'up',
+          sum: '今日大涨：国联民生纪要指英伟达明确储能为下一代 AI 工厂必要组成，北美配储订单加速落地',
+          src: '电话会议纪要 · 09-14' },
+        { name: '苹果', code: 'AAPL', pct: '+0.36%', dir: 'up',
+          sum: '今日小幅收涨：KeyBanc 预测 iPhone 18 Pro 涨价 150 美元、维持「减持」；美银维持买入',
+          src: '机构观点 · 09-14' },
+        { name: '腾讯控股', code: '00700', pct: '+1.83%', dir: 'up',
+          sum: '今日收涨：AI 投入压制已定价，广告强劲与 WorkBuddy 变现催化估值修复',
+          src: '个股看点 · 09-12' }
+      ],
+      hot: '创新药板块走强：康方生物 HARMONI-2 OS 期中分析披露；关注美联储 9/16 议息',
+      hotSrc: '热点话题 · 09-14',
+      cta: '查看自选股复盘',
+      link: '订阅晨报'
+    }
+  };
+
+  var mailTitle = document.getElementById('mailTitle');
+  var secTitle = document.getElementById('secTitle');
+  var briefList = document.getElementById('briefList');
+  var hotText = document.getElementById('hotText');
+  var hotSrc = document.getElementById('hotSrc');
+  var ctaBtn = document.getElementById('ctaBtn');
+  var subLink = document.getElementById('subLink');
+  var seg = document.getElementById('seg');
+
+  function esc(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function render(mode) {
+    var d = DATA[mode];
+    mailTitle.textContent = d.title;
+    secTitle.textContent = d.sec;
+    briefList.innerHTML = d.items.map(function (it) {
+      return '<div class="brief-item">' +
+        '<div class="brief-head">' +
+          '<span class="brief-stock">' + esc(it.name) + '<span class="code">' + esc(it.code) + '</span></span>' +
+          '<span class="brief-pct pct num ' + it.dir + '">' + esc(it.pct) + '</span>' +
+        '</div>' +
+        '<div class="brief-sum">' + esc(it.sum) + '</div>' +
+        '<div class="brief-src">' + esc(it.src) + '</div>' +
+      '</div>';
+    }).join('');
+    hotText.textContent = d.hot;
+    hotSrc.textContent = d.hotSrc;
+    ctaBtn.textContent = d.cta;
+    subLink.textContent = d.link;
+    seg.querySelectorAll('button').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.mode === mode);
+    });
+  }
+
+  seg.addEventListener('click', function (e) {
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    e.stopPropagation();
+    render(btn.dataset.mode);
+  });
+
+  render('morning');
+})();
+</script>
+
+</body>
+</html>

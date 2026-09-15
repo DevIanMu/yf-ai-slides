@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>YF × Gangtise AI 能力接入 · 汇报（打印版）</title>
+<script>
+  window.DECK_MANIFEST = [
+    { file: "slides/01-cover.html" },
+    { file: "slides/02-why.html" },
+    { file: "slides/03-evidence.html" },
+    { file: "slides/04-demo-pager.html" },
+    { file: "slides/05-demo-watchlist.html" },
+    { file: "slides/06-demo-alert.html" },
+    { file: "slides/07-retention.html" },
+    { file: "slides/08-mapping.html" },
+    { file: "slides/09-cost.html" },
+    { file: "slides/10-risks.html" },
+    { file: "slides/11-roadmap.html" },
+  ];
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; }
+  @page { size: 1920px 1080px; margin: 0; }
+  .slide {
+    width: 1920px; height: 1080px;
+    page-break-after: always; break-after: page;
+    display: block; border: 0; overflow: hidden;
+  }
+  .slide:last-child { page-break-after: auto; break-after: auto; }
+</style>
+</head>
+<body>
+<script>
+  (function () {
+    window.DECK_MANIFEST.forEach(function (m) {
+      var f = document.createElement('iframe');
+      f.className = 'slide';
+      f.src = m.file;
+      document.body.appendChild(f);
+    });
+  })();
+</script>
+</body>
+</html>

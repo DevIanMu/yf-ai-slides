@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>10 · 落地节奏</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<style>
+  body { padding: 150px 96px 0; }
+  h1 { font-family: var(--f-display); font-size: 60px; font-weight: 400; letter-spacing: -1.6px; margin: 20px 0 56px; }
+  .phases { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+  .ph { border-radius: var(--r-xl); padding: 36px 40px; }
+  .ph.p1 { background: var(--surface-dark); color: var(--on-dark); }
+  .ph.p2, .ph.p3 { background: var(--surface-soft); }
+  .ph .tag { font-size: 15px; font-weight: 600; letter-spacing: 0.12em; margin-bottom: 6px; color: var(--yf-blue); }
+  .ph h3 { font-size: 30px; font-weight: 400; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .ph .time { font-size: 16px; color: var(--muted); margin-bottom: 22px; font-family: var(--f-mono); }
+  .ph.p1 .time { color: var(--on-dark-soft); }
+  .ph ul { list-style: none; }
+  .ph li { font-size: 19px; padding: 7px 0; color: var(--body); }
+  .ph.p1 li { color: var(--on-dark-soft); }
+  .ph li b { color: var(--ink); font-weight: 600; }
+  .ph.p1 li b { color: var(--on-dark); }
+  .metric {
+    margin-top: 40px; display: flex; gap: 48px; align-items: baseline;
+    background: var(--surface-soft); border-radius: var(--r-lg); padding: 26px 36px;
+    font-size: 20px; color: var(--body);
+  }
+  .metric b { color: var(--ink); }
+</style>
+</head>
+<body>
+  <div class="page-tag"><span class="yf">11</span> · 落地节奏</div>
+  <img class="page-logo" src="../assets/yf-brand/logo_blue@3x.png" style="height:36px" alt="">
+  <h1>三期推进：先验证留存，再扩覆盖</h1>
+  <div class="phases">
+    <div class="ph p1">
+      <div class="tag">一期 · 本期申请</div>
+      <h3>P0 功能试点</h3>
+      <div class="time">1-2 个月</div>
+      <ul>
+        <li><b>个股一页通卡片</b>（折叠版，点击展开）</li>
+        <li><b>自选股 AI 摘要流</b>（港股看点 + 美股线索）</li>
+        <li><b>AI 晨报 + 晚报</b>（Push 同步站内信，一期主推触达）</li>
+        <li>前置：证券代码映射表 + 后端 API 代理层</li>
+        <li>覆盖 300-800 只热门标的，灰度 10% 用户</li>
+      </ul>
+    </div>
+    <div class="ph p2">
+      <div class="tag">二期</div>
+      <h3>深度与陪伴</h3>
+      <div class="time">2-3 个月</div>
+      <ul>
+        <li><b>个股深度页</b>：一页通全文章节折叠</li>
+        <li><b>周报邮件</b>（复用周内内容，零新增成本）</li>
+        <li>个股看点更新 Push（港股）；非科技标的兜底策略</li>
+        <li>视商务结果启动：美股个股看点恢复 / 热点过滤版</li>
+      </ul>
+    </div>
+    <div class="ph p3">
+      <div class="tag">三期</div>
+      <h3>深度与定制</h3>
+      <div class="time">3 个月+</div>
+      <ul>
+        <li><b>异动解读层 + 事件层</b>（投研线索「机构怎么看」+ 公告触发）</li>
+        <li><b>散户版一页通</b>（大白话重写，或定制摘要 Agent）</li>
+        <li>与 Gangtise 定制「美股版热点话题」</li>
+      </ul>
+    </div>
+  </div>
+  <div class="metric">
+    <span><b>一期验收指标</b>：AI 卡片点击率、异动 Push 点击率、7 日留存提升幅度——先灰度定目标值，达标后再扩量扩覆盖。</span>
+  </div>
+  <div class="page-footer"><span>YF × Gangtise AI 能力接入方案</span><span>11</span></div>
+</body>
+</html>

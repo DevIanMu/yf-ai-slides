@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>07 · 成本模型</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<style>
+  body { padding: 150px 96px 0; }
+  h1 { font-family: var(--f-display); font-size: 60px; font-weight: 400; letter-spacing: -1.6px; margin: 20px 0 64px; }
+  .hero-row { display: grid; grid-template-columns: 1.1fr 1fr; gap: 64px; align-items: start; }
+  .big-number {
+    font-family: var(--f-mono); font-size: 130px; font-weight: 500; letter-spacing: -4px;
+    color: var(--yf-blue); line-height: 1;
+  }
+  .big-cap { font-size: 24px; color: var(--body); margin-top: 20px; max-width: 640px; }
+  .big-cap b { color: var(--ink); }
+  .flow { display: flex; flex-direction: column; gap: 14px; }
+  .flow .step {
+    background: var(--surface-soft); border-radius: var(--r-lg);
+    padding: 22px 28px; font-size: 19px;
+  }
+  .flow .step b { display: block; font-size: 20px; margin-bottom: 4px; }
+  .flow .step span { color: var(--body); }
+  .flow .arrow { text-align: center; color: var(--muted-soft); font-size: 18px; line-height: 1; }
+  .table { margin-top: 56px; width: 100%; border-collapse: collapse; font-size: 20px; }
+  .table th {
+    text-align: left; font-weight: 600; color: var(--muted); font-size: 16px;
+    letter-spacing: 0.08em; padding: 0 16px 14px; border-bottom: 1px solid var(--hairline);
+  }
+  .table td { padding: 16px; border-bottom: 1px solid var(--hairline-soft); }
+  .table .r { text-align: right; font-family: var(--f-mono); }
+  .table .key { color: var(--yf-blue); font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="page-tag"><span class="yf">09</span> · 成本模型</div>
+  <img class="page-logo" src="../assets/yf-brand/logo_blue@3x.png" style="height:36px" alt="">
+  <h1>证券级共享缓存：成本只随覆盖证券数增长</h1>
+  <div class="hero-row">
+    <div>
+      <div class="big-number">≈¥1万<span style="font-size:48px; letter-spacing:-1px">/月</span></div>
+      <p class="big-cap">初期只覆盖 <b>300-800 只热门标的</b>（自选热度 ∪ 成交额排行），月消耗约 <b>10 万积分 × ¥0.1/积分（已确认）</b>。成本随「覆盖证券数」增长，<b>不随用户数增长</b>——个性化只发生在我方组装层，零 API 成本。规模化（2000-5000 只）约 ¥7-10 万/月。</p>
+    </div>
+    <div class="flow">
+      <div class="step"><b>① 生成层（Gangtise）</b><span>按证券生成，一只一份；只在缓存 miss 时调用</span></div>
+      <div class="arrow">↓</div>
+      <div class="step"><b>② 证券级缓存（全平台共享）</b><span>key = 证券代码 + 内容类型 + 日期</span></div>
+      <div class="arrow">↓</div>
+      <div class="step"><b>③ 用户级组装（YF 侧，零 API 成本）</b><span>按用户自选股聚合排序，不生成新内容</span></div>
+    </div>
+  </div>
+  <table class="table">
+    <tr><th>功能（初期热门榜覆盖）</th><th style="text-align:right">月积分</th><th style="text-align:right">月成本（¥0.1/积分）</th></tr>
+    <tr><td>个股看点（500 只×1次/天）</td><td class="r">4.5 万</td><td class="r key">¥4,500</td></tr>
+    <tr><td>一页通（200 只×1次/周）</td><td class="r">4 万</td><td class="r key">¥4,000</td></tr>
+    <tr><td>热点话题（4 份/天，全共享）+ 线索（异动解读）</td><td class="r">约 1 万</td><td class="r key">约 ¥1,000</td></tr>
+  </table>
+  <div class="page-footer"><span>YF × Gangtise AI 能力接入方案</span><span>09</span></div>
+</body>
+</html>

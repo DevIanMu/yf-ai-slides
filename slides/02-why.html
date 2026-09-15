@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>02 · 为什么现在</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<style>
+  body { padding: 160px 96px 0; }
+  h1 { font-family: var(--f-display); font-size: 68px; font-weight: 400; letter-spacing: -1.8px; margin: 24px 0 80px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+  .cell { padding: 40px; border-radius: var(--r-xl); }
+  .cell h3 { font-size: 26px; font-weight: 600; margin-bottom: 16px; }
+  .cell p { font-size: 20px; color: var(--body); line-height: 1.6; }
+  .cell .big {
+    font-family: var(--f-mono); font-size: 56px; font-weight: 500;
+    letter-spacing: -1px; margin-bottom: 16px; color: var(--yf-blue);
+  }
+  .cell.dark-cell { background: var(--surface-dark); color: var(--on-dark); }
+  .cell.dark-cell p { color: var(--on-dark-soft); }
+  .cell.soft { background: var(--surface-soft); }
+  .note { margin-top: 64px; font-size: 18px; color: var(--muted); }
+  .note b { color: var(--ink); }
+</style>
+</head>
+<body>
+  <div class="page-tag"><span class="yf">02</span> · 为什么现在</div>
+  <img class="page-logo" src="../assets/yf-brand/logo_blue@3x.png" style="height:36px" alt="">
+  <h1>散户的痛点很明确：资讯太多，结论太少</h1>
+  <div class="grid">
+    <div class="cell soft">
+      <div class="big">过载</div>
+      <h3>用户看不过来</h3>
+      <p>港美股用户面对 7×24 资讯、研报、公告、纪要，信息量是个人处理能力的几个数量级。用户要的不是更多资讯，是「跟我有关的结论」。</p>
+    </div>
+    <div class="cell soft">
+      <div class="big">断点</div>
+      <h3>内容与交易之间断了一环</h3>
+      <p>用户在 App 里看到消息，却不知道「这意味着什么、跟我持仓什么关系」。内容不能直接导向决策和交易，留存和转化都漏在这里。</p>
+    </div>
+    <div class="cell dark-cell">
+      <div class="big" style="color:var(--yf-blue)">可行</div>
+      <h3>供给端已经成熟</h3>
+      <p>Gangtise 的 AI 投研能力（一页通 / 投研线索 / 知识库）覆盖港美股、返回结构化中文内容——我们已完成 14 项需求的逐条 API 实测，能用什么、不能用什么，有定论。</p>
+    </div>
+  </div>
+  <p class="note">本次汇报的所有结论<b>均来自真实 API 调用验证</b>（2026-09-14，含复测），不依赖供应商宣传材料。</p>
+  <div class="page-footer"><span>YF × Gangtise AI 能力接入方案</span><span>02</span></div>
+</body>
+</html>
