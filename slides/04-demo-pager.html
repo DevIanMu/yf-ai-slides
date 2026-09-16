@@ -219,22 +219,29 @@
   .ai-card-head .ai-title { font-size: 15px; font-weight: 600; }
   .ai-card-head .ai-src { margin-left: auto; font-size: 11px; color: var(--muted-soft); }
 
+  /* 默认收起态：一句话结论，最多 2 行 */
   .ai-summary {
-    font-size: 13px; line-height: 1.65; color: var(--ink);
-    margin-bottom: 10px;
+    font-size: 13px; line-height: 1.6; color: var(--ink);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
   }
-  .ai-bullets { list-style: none; margin-bottom: 4px; }
-  .ai-bullets li {
-    position: relative;
-    font-size: 12.5px; line-height: 1.6; color: var(--body);
-    padding-left: 14px; margin-bottom: 8px;
+  .ai-summary b { font-weight: 600; }
+
+  /* 多空速览标签：收起态的决策辅助，一眼扫完利好/催化/风险 */
+  .ai-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .ai-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--body);
+    background: var(--surface-soft); border-radius: var(--r-pill);
+    padding: 3px 9px;
   }
-  .ai-bullets li::before {
-    content: ''; position: absolute; left: 0; top: 8px;
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--yf-blue);
+  .ai-tag::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--tag-c, var(--muted-soft));
   }
-  .ai-bullets li b { color: var(--ink); font-weight: 600; }
+  .ai-tag.pos  { --tag-c: var(--up); }
+  .ai-tag.cat  { --tag-c: var(--yf-blue); }
+  .ai-tag.risk { --tag-c: #e8a13a; }
 
   .ai-toggle {
     display: flex; align-items: center; justify-content: center; gap: 4px;
@@ -324,8 +331,8 @@
       <p>用户打开个股页，想快速知道「这公司是干什么的、值不值得看」。</p>
     </div>
     <div class="point">
-      <h3><span class="k">实现</span>50 积分/篇，默认折叠呈现</h3>
-      <p>一页通 50 积分/篇，默认折叠为「一句话结论 + 3 要点」，点击展开章节。卡片位于买卖盘之下、资金流向之上——行情决策动线的自然延伸。</p>
+      <h3><span class="k">实现</span>50 积分/篇，默认两行收起</h3>
+      <p>一页通 50 积分/篇，默认只露「一句话结论 + 多空标签」——先回答「值不值得看」，想深挖再展开完整章节。卡片位于买卖盘之下、资金流向之上——行情决策动线的自然延伸。</p>
     </div>
     <div class="point">
       <h3><span class="k">成本</span>证券级共享缓存</h3>
@@ -484,13 +491,13 @@
                 <span class="ai-src">来源 Gangtise</span>
               </div>
 
-              <p class="ai-summary">全球最大消费电子公司：25 亿台活跃设备构筑生态闭环，服务业务以 <b>75.4%</b> 毛利率贡献集团 42% 毛利，估值锚点正从硬件销量向「高毛利服务 + AI 入口」迁移。</p>
+              <p class="ai-summary">全球最大消费电子公司：<b>3QFY26 营收 1,094 亿美元超预期</b>，折叠屏 iPhone Duo 打开增量；但存储成本上行，毛利率承压。</p>
 
-              <ul class="ai-bullets">
-                <li><b>3QFY26 营收 1,094 亿美元（+16.4%）超预期</b>，iPhone 连续 17 个月销量正增长，服务收入 +12.1%。</li>
-                <li><b>首款折叠屏 iPhone Duo 发布，起售价 1,999 美元</b>低于市场预期，大摩预计开售后快速售罄。</li>
-                <li><b>存储成本上行压制毛利率</b>：4QFY26 指引 47%–48%，环比下滑约 160bps。</li>
-              </ul>
+              <div class="ai-tags">
+                <span class="ai-tag pos">业绩超预期</span>
+                <span class="ai-tag cat">折叠屏催化</span>
+                <span class="ai-tag risk">毛利率承压</span>
+              </div>
 
               <div class="ai-full">
                 <div class="ai-sec">

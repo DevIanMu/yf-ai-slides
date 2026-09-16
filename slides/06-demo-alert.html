@@ -175,9 +175,11 @@
 
   .brief-item {
     border: 1px solid var(--hairline-soft);
-    border-radius: 16px; padding: 12px 14px;
-    margin-bottom: 10px;
+    border-radius: 16px; padding: 10px 14px;
+    margin-bottom: 8px;
   }
+  /* 智通财经要闻层条目 */
+  .brief-item.news { border-color: rgba(25,110,255,0.35); }
   .brief-head {
     display: flex; align-items: baseline; justify-content: space-between;
     margin-bottom: 5px;
@@ -248,14 +250,14 @@
       </div>
       <div class="point">
         <div class="pt-title"><span class="k">实现</span>定时组装，一次触达</div>
-        <div class="pt-desc">每天 8:00 定时组装——投研线索快照 + 个股看点（港股）+ 过滤版热点，Push 推送并同步站内信。</div>
+        <div class="pt-desc">每天 8:00 定时组装——投研线索快照 + 个股看点（港股）+ 过滤版热点 + 智通财经要闻聚合，Push 推送并同步站内信。</div>
       </div>
       <div class="point">
         <div class="pt-title"><span class="k">成本</span>零新增积分</div>
-        <div class="pt-desc">全部复用证券级日缓存，零新增积分；晚报同源，收盘后推送当日复盘。</div>
+        <div class="pt-desc">全部复用证券级日缓存，零新增积分；智通财经新闻层为 YF 侧 AI 摘要，同样零积分；晚报同源，收盘后推送当日复盘。</div>
       </div>
     </div>
-    <div class="foot-note">右侧原型内容为 Gangtise API 真实返回（2026-09 实测）</div>
+    <div class="foot-note">右侧原型：Gangtise API 实测返回 + 智通财经要闻层演示</div>
   </div>
 
   <!-- 右侧 iPhone 原型 -->
@@ -285,7 +287,7 @@
             <div class="push-body">
               <div class="push-meta"><span>云锋有鱼</span><span>现在</span></div>
               <div class="push-title">AI 晨报：你的自选股隔夜动态</div>
-              <div class="push-text">英伟达获机构集中解读、腾讯广告强变现，3 条关注事项已生成</div>
+              <div class="push-text">英伟达获机构集中解读、迈威尔获美银力挺，4 条关注事项已生成</div>
             </div>
           </div>
           <div class="push-hint">点击 Push 查看晨报</div>
@@ -304,7 +306,7 @@
             </div>
           </div>
           <div class="scroll">
-            <div class="section-title"><span id="secTitle">隔夜关注</span><span class="cnt">· 3 条</span></div>
+            <div class="section-title"><span id="secTitle">隔夜关注</span><span class="cnt" id="secCnt">· 4 条</span></div>
             <div id="briefList"></div>
             <div class="section-title"><span>市场热点</span><span class="cnt">全平台共享</span></div>
             <div class="hot-item">
@@ -371,8 +373,12 @@
           src: '机构观点 · 09-14' },
         { name: '腾讯控股', code: '00700', pct: '+1.83%', dir: 'up',
           sum: 'AI 投入压制已定价，广告强劲与 WorkBuddy 变现催化估值修复',
-          src: '个股看点 · 09-12' }
+          src: '个股看点 · 09-12' },
+        { name: '迈威尔', code: 'MRVL', pct: '+5.21%', dir: 'up', news: true,
+          sum: '美银：ASIC 与光互连撑起高速增长版图，维持「买入」并高呼还有 55% 上涨空间',
+          src: '智通财经 · 09-14 · AI 聚合' }
       ],
+      cnt: '· 4 条',
       hot: '创新药：康方生物 HARMONI-2 OS 期中分析今日披露；美联储 9/16 议息',
       hotSrc: '热点话题 · 09-15',
       cta: '查看今日自选股',
@@ -390,8 +396,12 @@
           src: '机构观点 · 09-14' },
         { name: '腾讯控股', code: '00700', pct: '+1.83%', dir: 'up',
           sum: '今日收涨：AI 投入压制已定价，广告强劲与 WorkBuddy 变现催化估值修复',
-          src: '个股看点 · 09-12' }
+          src: '个股看点 · 09-12' },
+        { name: '迈威尔', code: 'MRVL', pct: '+5.21%', dir: 'up', news: true,
+          sum: '今日收涨：美银报告指出 ASIC 与光互连打开增长空间，维持「买入」评级',
+          src: '智通财经 · 09-14 · AI 聚合' }
       ],
+      cnt: '· 4 条',
       hot: '创新药板块走强：康方生物 HARMONI-2 OS 期中分析披露；关注美联储 9/16 议息',
       hotSrc: '热点话题 · 09-14',
       cta: '查看自选股复盘',
@@ -401,6 +411,7 @@
 
   var mailTitle = document.getElementById('mailTitle');
   var secTitle = document.getElementById('secTitle');
+  var secCnt = document.getElementById('secCnt');
   var briefList = document.getElementById('briefList');
   var hotText = document.getElementById('hotText');
   var hotSrc = document.getElementById('hotSrc');
@@ -416,8 +427,9 @@
     var d = DATA[mode];
     mailTitle.textContent = d.title;
     secTitle.textContent = d.sec;
+    secCnt.textContent = d.cnt;
     briefList.innerHTML = d.items.map(function (it) {
-      return '<div class="brief-item">' +
+      return '<div class="brief-item' + (it.news ? ' news' : '') + '">' +
         '<div class="brief-head">' +
           '<span class="brief-stock">' + esc(it.name) + '<span class="code">' + esc(it.code) + '</span></span>' +
           '<span class="brief-pct pct num ' + it.dir + '">' + esc(it.pct) + '</span>' +

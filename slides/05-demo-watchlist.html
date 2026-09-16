@@ -146,6 +146,7 @@
   /* AI 摘要行（本页主角） */
   .ai-line {
     display: flex; align-items: flex-start; gap: 7px; margin-top: 7px;
+    cursor: pointer;
   }
   .ai-bar { flex: none; width: 3px; align-self: stretch; border-radius: 2px; background: var(--yf-blue); }
   .ai-badge {
@@ -153,27 +154,32 @@
     border: 1px solid rgba(25,110,255,0.35); border-radius: 4px;
     padding: 0 4px; line-height: 15px; margin-top: 1px; letter-spacing: 0.02em;
   }
-  .ai-text { font-size: 12.5px; line-height: 1.45; color: var(--body); }
-  .ai-text .src { color: var(--muted); }
+  .ai-rotor { position: relative; flex: 1; min-width: 0; height: 37px; }
+  .ai-slide {
+    position: absolute; inset: 0;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    font-size: 12.5px; line-height: 1.45; color: var(--body);
+    opacity: 0; transform: translateY(8px);
+    transition: opacity .35s ease, transform .35s ease;
+    pointer-events: none;
+  }
+  .ai-slide.on { opacity: 1; transform: none; pointer-events: auto; }
+  .ai-slide .src { color: var(--muted); }
+  .ai-dots { flex: none; display: flex; gap: 4px; padding-top: 4px; }
+  .ai-dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--hairline); transition: background .3s; }
+  .ai-dots i.on { background: var(--yf-blue); }
 
-  /* 来源详情面板（点击展开） */
-  .detail {
-    max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+  /* 进入个股页的跳转提示 */
+  .nav-toast {
+    position: absolute; left: 50%; bottom: 108px;
+    transform: translateX(-50%) translateY(8px);
+    background: rgba(10,11,13,0.85); color: #fff;
+    border-radius: var(--r-pill); padding: 8px 18px;
+    font-size: 12.5px; white-space: nowrap;
+    opacity: 0; transition: opacity .25s ease, transform .25s ease;
+    pointer-events: none; z-index: 40;
   }
-  .row.open .detail { max-height: 220px; }
-  .detail-inner {
-    margin-top: 9px; background: var(--surface-soft); border-radius: var(--r-md);
-    padding: 10px 12px;
-  }
-  .detail-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .src-badge {
-    font-size: 10.5px; font-weight: 600; border-radius: var(--r-pill);
-    padding: 2px 9px;
-  }
-  .src-badge.ai { background: var(--yf-blue); color: #fff; }
-  .src-badge.neutral { background: var(--surface-strong); color: var(--body); }
-  .detail-meta { font-size: 11px; color: var(--muted); }
-  .detail-body { font-size: 12.5px; line-height: 1.55; color: var(--body); }
+  .nav-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   /* 底部操作条 + tab bar */
   .wl-actions {
@@ -211,7 +217,7 @@
   </div>
   <div class="point">
     <div class="pt-title"><span class="tag">实现</span>看点 + 线索，双引擎驱动</div>
-    <div class="pt-desc">个股看点（3 积分/条）+ 投研线索（5 积分/条），证券级共享缓存，个性化成本降 95%+。</div>
+    <div class="pt-desc">个股看点（3 积分/条）+ 投研线索（5 积分/条），多只要点轮播呈现，一次只看一条；证券级共享缓存，个性化成本降 95%+。</div>
   </div>
   <div class="point">
     <div class="pt-title"><span class="tag">现状</span>港股/A股新鲜，美股需兜底</div>
@@ -282,16 +288,11 @@
             </div>
             <div class="ai-line">
               <span class="ai-bar"></span><span class="ai-badge">AI</span>
-              <span class="ai-text">「AI 投资压低估腾讯，广告强变现 + WorkBuddy 催化估值修复」<span class="src"> — 个股看点 09-12</span></span>
-            </div>
-            <div class="detail">
-              <div class="detail-inner">
-                <div class="detail-top">
-                  <span class="src-badge ai">个股看点</span>
-                  <span class="detail-meta">Gangtise AI · 2026-09-12</span>
-                </div>
-                <div class="detail-body">市场低估腾讯 AI 投入产出比：广告受益 AI 推荐强变现，视频号加载率仍有空间；WorkBuddy 接入微信生态打开 B 端场景，催化估值修复。</div>
+              <div class="ai-rotor">
+                <div class="ai-slide on" data-badge="个股看点" data-badgecls="ai" data-meta="Gangtise AI · 2026-09-12" data-body="市场低估腾讯 AI 投入产出比：广告受益 AI 推荐强变现，视频号加载率仍有空间；WorkBuddy 接入微信生态打开 B 端场景，催化估值修复。">「AI 投资压低估腾讯，广告强变现 + WorkBuddy 催化估值修复」<span class="src"> — 个股看点 09-12</span></div>
+                <div class="ai-slide" data-badge="研报观点" data-badgecls="neutral" data-meta="摩根士丹利 · 2026-09-11" data-body="大摩认为腾讯 AI 云收入增速拐点已现，叠加视频号广告放量，上调目标价至 620 港元，对应 2026 年 28 倍 PE。">「大摩上调目标价至 620 港元，AI 云 + 广告双轮驱动」<span class="src"> — 研报观点 09-11</span></div>
               </div>
+              <span class="ai-dots"><i class="on"></i><i></i></span>
             </div>
           </div>
 
@@ -314,20 +315,15 @@
             </div>
             <div class="ai-line">
               <span class="ai-bar"></span><span class="ai-badge">AI</span>
-              <span class="ai-text">「AI 收入报喜，AI 云业务减亏催化估值修复」<span class="src"> — 个股看点 09-12</span></span>
-            </div>
-            <div class="detail">
-              <div class="detail-inner">
-                <div class="detail-top">
-                  <span class="src-badge ai">个股看点</span>
-                  <span class="detail-meta">Gangtise AI · 2026-09-12</span>
-                </div>
-                <div class="detail-body">阿里云 AI 相关收入连续多个季度三位数增长，云业务亏损持续收窄；电商基本盘企稳叠加 AI 云减亏，市场对其估值修复的预期升温。</div>
+              <div class="ai-rotor">
+                <div class="ai-slide on" data-badge="个股看点" data-badgecls="ai" data-meta="Gangtise AI · 2026-09-12" data-body="阿里云 AI 相关收入连续多个季度三位数增长，云业务亏损持续收窄；电商基本盘企稳叠加 AI 云减亏，市场对其估值修复的预期升温。">「AI 收入报喜，AI 云业务减亏催化估值修复」<span class="src"> — 个股看点 09-12</span></div>
+                <div class="ai-slide" data-badge="投研线索" data-badgecls="neutral" data-meta="浙商证券 · 2026-09-10" data-body="阿里云 AI 相关产品收入维持三位数增速，管理层确认未来三年云与 AI 基础设施投入继续加码，减亏节奏超预期。">「阿里云 AI 收入连续六季度三位数增长，投入再加码」<span class="src"> — 投研线索 09-10</span></div>
               </div>
+              <span class="ai-dots"><i class="on"></i><i></i></span>
             </div>
           </div>
 
-          <div class="row open" data-row>
+          <div class="row" data-row>
             <div class="quote">
               <div class="q-left">
                 <span class="mkt-tag">US</span>
@@ -346,16 +342,12 @@
             </div>
             <div class="ai-line">
               <span class="ai-bar"></span><span class="ai-badge">AI</span>
-              <span class="ai-text">「英伟达明确储能是下一代 AI 工厂必要组成部分，北美配储订单加速」<span class="src"> — 国联民生纪要 09-07</span></span>
-            </div>
-            <div class="detail">
-              <div class="detail-inner">
-                <div class="detail-top">
-                  <span class="src-badge neutral">电话会议纪要</span>
-                  <span class="detail-meta">国联民生证券 · 2026-09-07</span>
-                </div>
-                <div class="detail-body">纪要指出，英伟达在最新交流中明确储能是下一代 AI 工厂的必要组成部分，AI 数据中心功耗波动需配储平滑；北美大客户配储订单加速落地，储能产业链需求预期上修。</div>
+              <div class="ai-rotor">
+                <div class="ai-slide on" data-badge="电话会议纪要" data-badgecls="neutral" data-meta="国联民生证券 · 2026-09-07" data-body="纪要指出，英伟达在最新交流中明确储能是下一代 AI 工厂的必要组成部分，AI 数据中心功耗波动需配储平滑；北美大客户配储订单加速落地，储能产业链需求预期上修。">「英伟达明确储能是下一代 AI 工厂必要组成部分，北美配储订单加速」<span class="src"> — 国联民生纪要 09-07</span></div>
+                <div class="ai-slide" data-badge="公司动态" data-badgecls="neutral" data-meta="产业链调研 · 2026-09-10" data-body="产业链调研显示 Blackwell Ultra 平台订单能见度延伸至 2026 年下半年，CoWoS 与 HBM 供应持续紧缺，英伟达已要求供应链追加产能。">「Blackwell Ultra 供不应求，供应链追加 2026 产能」<span class="src"> — 公司动态 09-10</span></div>
+                <div class="ai-slide" data-badge="投研线索" data-badgecls="neutral" data-meta="投研线索 · 2026-09-08" data-body="北美主要云厂商上调全年资本开支指引，GPU 采购计划环比继续增长；市场开始上修 2027 年 AI 基建支出预期。">「北美四大 CSP 上调资本开支指引，AI 基建周期延续」<span class="src"> — 投研线索 09-08</span></div>
               </div>
+              <span class="ai-dots"><i class="on"></i><i></i><i></i></span>
             </div>
           </div>
 
@@ -378,16 +370,11 @@
             </div>
             <div class="ai-line">
               <span class="ai-bar"></span><span class="ai-badge">AI</span>
-              <span class="ai-text">「KeyBanc：预测 iPhone 18 Pro 涨价 150 美元，维持『减持』评级」<span class="src"> — 机构观点 09-07</span></span>
-            </div>
-            <div class="detail">
-              <div class="detail-inner">
-                <div class="detail-top">
-                  <span class="src-badge neutral">机构观点</span>
-                  <span class="detail-meta">KeyBanc · 2026-09-07</span>
-                </div>
-                <div class="detail-body">KeyBanc 预测 iPhone 18 Pro 系列起售价将上调约 150 美元，存储与影像升级为涨价主因；但认为涨价将压制换机需求，叠加估值已处高位，维持「减持」评级。</div>
+              <div class="ai-rotor">
+                <div class="ai-slide on" data-badge="机构观点" data-badgecls="neutral" data-meta="KeyBanc · 2026-09-07" data-body="KeyBanc 预测 iPhone 18 Pro 系列起售价将上调约 150 美元，存储与影像升级为涨价主因；但认为涨价将压制换机需求，叠加估值已处高位，维持「减持」评级。">「KeyBanc：预测 iPhone 18 Pro 涨价 150 美元，维持『减持』评级」<span class="src"> — 机构观点 09-07</span></div>
+                <div class="ai-slide" data-badge="投研线索" data-badgecls="neutral" data-meta="摩根士丹利 · 2026-09-10" data-body="大摩预计 iPhone 18 Pro 系列 CY26 备货量逼近 2.7 亿部（+7%），预购开启后首周订单数据将成为短期股价催化。">「iPhone 18 Pro 明日开启预购，首周订单或创纪录」<span class="src"> — 投研线索 09-10</span></div>
               </div>
+              <span class="ai-dots"><i class="on"></i><i></i></span>
             </div>
           </div>
 
@@ -423,10 +410,11 @@
         </div>
       </div>
 
+      <div class="nav-toast" id="navToast"></div>
       <div class="home-indicator"></div>
     </div>
   </div>
-  <div class="hint"><span class="dot">●</span> 可交互原型 · 点击任意一行，展开来源详情</div>
+  <div class="hint"><span class="dot">●</span> 可交互原型 · AI 要点自动轮播 · 点击任意行进入个股页</div>
 </div>
 
 <div class="page-footer">
@@ -436,12 +424,42 @@
 
 <script>
 (function () {
-  var rows = document.querySelectorAll('#wl .row');
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#wl .row'));
+
+  // ---- AI 要点轮播：每条 3.4s 起步、按行错开 ----
+  rows.forEach(function (row, rowIdx) {
+    var rotor = row.querySelector('.ai-rotor');
+    if (!rotor) return;
+    var slides = Array.prototype.slice.call(rotor.querySelectorAll('.ai-slide'));
+    var dots = Array.prototype.slice.call(row.querySelectorAll('.ai-dots i'));
+    if (slides.length <= 1) {
+      var dd = row.querySelector('.ai-dots');
+      if (dd) dd.style.visibility = 'hidden';
+      return;
+    }
+    var cur = 0;
+    function apply() {
+      slides.forEach(function (s, i) { s.classList.toggle('on', i === cur); });
+      dots.forEach(function (d, i) { d.classList.toggle('on', i === cur); });
+    }
+    apply();
+    setInterval(function () {
+      cur = (cur + 1) % slides.length;
+      apply();
+    }, 3400 + rowIdx * 700);
+  });
+
+  // ---- 点击股票行 → 模拟进入个股详情页 ----
+  var toast = document.getElementById('navToast');
+  var toastTimer = null;
   rows.forEach(function (row) {
     row.addEventListener('click', function () {
-      var wasOpen = row.classList.contains('open');
-      rows.forEach(function (r) { r.classList.remove('open'); });
-      if (!wasOpen) row.classList.add('open');
+      var name = row.querySelector('.q-name').textContent;
+      var code = row.querySelector('.q-code').textContent;
+      toast.textContent = '打开 ' + name + '(' + code + ') 个股页 →';
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 1800);
     });
   });
 })();
