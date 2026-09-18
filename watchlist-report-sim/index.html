@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WATCHLIST SIM · AI 晨报/晚报回放（真实数据）</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  /* ===== tokens（拷贝自 shared/tokens.css，去掉了 1920x1080 锁定） ===== */
+  :root {
+    --yf-blue: #196EFF;
+    --yf-blue-active: #0034a8;
+    --ink: #0a0b0d;
+    --body: #5b616e;
+    --muted: #7c828a;
+    --muted-soft: #a8acb3;
+    --canvas: #ffffff;
+    --surface-soft: #f7f7f7;
+    --surface-strong: #eef0f3;
+    --surface-dark: #0a0b0d;
+    --surface-dark-elevated: #16181c;
+    --on-dark: #ffffff;
+    --on-dark-soft: #a8acb3;
+    --hairline: #dee1e6;
+    --hairline-soft: #eef0f3;
+    --up: #cf202f;
+    --down: #05b169;
+    --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-pill: 100px;
+    --f-display: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    --f-body: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    --f-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; min-height: 100%; }
+  body {
+    background: var(--surface-dark);
+    color: var(--on-dark);
+    font-family: var(--f-body);
+    font-size: 16px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+  .pct.up { color: var(--up); }
+  .pct.down { color: var(--down); }
+
+  .page-tag {
+    position: absolute; top: 32px; left: 48px;
+    font-size: 14px; font-weight: 600; letter-spacing: 0.18em;
+    color: var(--on-dark-soft); text-transform: uppercase;
+  }
+  .page-tag .yf { color: var(--yf-blue); }
+  .page-logo { position: absolute; top: 26px; right: 48px; height: 28px; }
+
+  /* ===== 顶部控制区 ===== */
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 96px 48px 64px; }
+  .controls h1 {
+    font-family: var(--f-display); font-size: 40px; font-weight: 400;
+    letter-spacing: -1px; line-height: 1.2;
+  }
+  .controls .sub { margin-top: 10px; font-size: 15px; color: var(--on-dark-soft); }
+
+  .date-bar { display: flex; align-items: center; gap: 12px; margin-top: 28px; }
+  .nav-btn {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid #2a2e35; background: var(--surface-dark-elevated);
+    color: var(--on-dark); font-size: 18px; cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .nav-btn:hover { background: #1e2229; border-color: var(--yf-blue); }
+  .pills {
+    display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px;
+    scrollbar-width: thin; scrollbar-color: #2a2e35 transparent;
+  }
+  .pills::-webkit-scrollbar { height: 4px; }
+  .pills::-webkit-scrollbar-thumb { background: #2a2e35; border-radius: 2px; }
+  .pill {
+    flex-shrink: 0; border: 1px solid #2a2e35; background: var(--surface-dark-elevated);
+    color: var(--on-dark-soft); border-radius: var(--r-pill);
+    font-family: var(--f-body); font-size: 13px; font-weight: 600;
+    padding: 8px 14px; cursor: pointer; white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .pill .rest { font-size: 11px; font-weight: 500; color: var(--muted); margin-left: 4px; }
+  .pill:hover { border-color: var(--yf-blue); }
+  .pill.active { background: var(--yf-blue); border-color: var(--yf-blue); color: #fff; }
+  .pill.active .rest { color: rgba(255,255,255,0.75); }
+  .kbd-hint { margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .kbd-hint kbd {
+    font-family: var(--f-mono); font-size: 11px; border: 1px solid #2a2e35;
+    border-radius: 4px; padding: 1px 6px; background: var(--surface-dark-elevated);
+  }
+
+  /* ===== iPhone 框（复用 06-demo-alert.html） ===== */
+  .phone-stage { display: flex; justify-content: center; margin-top: 44px; }
+  .iphone {
+    padding: 12px; background: #000; border-radius: 60px;
+    box-shadow: 0 0 0 2px #1f2937, 0 24px 80px rgba(0,0,0,0.5);
+  }
+  .screen {
+    width: 393px; height: 852px; border-radius: 48px;
+    overflow: hidden; position: relative;
+    background: var(--canvas); color: var(--ink);
+  }
+  .island {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    width: 124px; height: 36px; background: #000; border-radius: 999px; z-index: 30;
+  }
+  .statusbar {
+    position: absolute; top: 0; left: 0; right: 0; height: 54px;
+    padding: 0 32px; display: flex; align-items: center; justify-content: space-between;
+    z-index: 25; color: var(--ink);
+  }
+  .statusbar .time { font-family: var(--f-body); font-size: 15px; font-weight: 600; }
+  .statusbar .icons { display: flex; align-items: center; gap: 6px; }
+  .home-indicator {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    width: 140px; height: 5px; border-radius: 999px; z-index: 30;
+    background: rgba(0,0,0,0.85);
+  }
+
+  /* ===== App 内页（复用 06 状态 B） ===== */
+  .app {
+    position: absolute; top: 54px; left: 0; right: 0; bottom: 34px;
+    display: flex; flex-direction: column; background: var(--canvas);
+  }
+  .app-header {
+    display: flex; align-items: center; gap: 8px; padding: 10px 20px 6px;
+  }
+  .back-btn { font-size: 20px; color: var(--yf-blue); padding: 2px 6px; line-height: 1; }
+  .app-header .mail-title { font-size: 16px; font-weight: 600; }
+  .scroll { flex: 1; padding: 8px 20px 0; overflow-y: auto; scrollbar-width: none; }
+  .scroll::-webkit-scrollbar { width: 0; }
+
+  .block-tag {
+    display: inline-block; padding: 4px 12px; border-radius: var(--r-pill);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em; margin: 10px 0 2px;
+  }
+  .block-tag.morning { background: #e8f0ff; color: var(--yf-blue); }
+  .block-tag.evening { background: #f0ebff; color: #6a4fd0; }
+
+  .ov-strip {
+    margin: 6px 0 2px; padding: 8px 12px;
+    background: var(--surface-soft); border-radius: var(--r-md);
+    font-size: 12px; color: var(--body); line-height: 1.5;
+  }
+
+  .section-title {
+    font-size: 14px; font-weight: 600; margin: 12px 0 10px;
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  .section-title .cnt { color: var(--muted); font-weight: 400; font-size: 12px; }
+
+  .brief-item {
+    border: 1px solid var(--hairline-soft); border-radius: 16px;
+    padding: 10px 14px; margin-bottom: 8px;
+  }
+  .brief-item.news { border-color: rgba(25,110,255,0.35); }
+  .brief-head {
+    display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 5px;
+  }
+  .brief-stock { font-size: 14px; font-weight: 600; }
+  .brief-stock .code {
+    font-family: var(--f-mono); font-size: 11px; font-weight: 500;
+    color: var(--muted); margin-left: 6px;
+  }
+  .brief-pct { font-size: 13px; }
+  .brief-pct.flat { color: var(--muted); }
+  .brief-sum {
+    font-size: 12px; color: var(--body); line-height: 1.55; margin-bottom: 5px;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .brief-sum.na { color: var(--muted-soft); font-size: 11px; }
+  .brief-src { font-size: 11px; color: var(--muted); }
+
+  .empty-tip {
+    border: 1px dashed var(--hairline); border-radius: 16px;
+    padding: 16px 14px; margin-bottom: 8px;
+    font-size: 12px; color: var(--muted); text-align: center;
+  }
+
+  .hot-item { background: var(--surface-soft); border-radius: 16px; padding: 12px 14px; }
+  .hot-item .hot-tag {
+    font-size: 10px; font-weight: 600; color: var(--yf-blue);
+    margin-bottom: 5px; display: block; letter-spacing: 0.05em;
+  }
+  .hot-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; line-height: 1.5; }
+  .hot-item .brief-sum { margin-bottom: 5px; }
+
+  .divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 18px 0 6px; font-size: 11px; color: var(--muted); white-space: nowrap;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--hairline);
+  }
+
+  .pending-box {
+    border: 1px dashed var(--hairline); border-radius: 16px;
+    padding: 22px 16px; margin: 10px 0 8px; text-align: center;
+  }
+  .pending-box .pb-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .pending-box .pb-sub { font-size: 12px; color: var(--muted); }
+
+  .cta-area { padding: 10px 20px 4px; text-align: center; }
+  .cta-btn {
+    display: block; width: 100%;
+    background: var(--yf-blue); color: #fff;
+    border: none; border-radius: var(--r-pill);
+    font-size: 15px; font-weight: 600; font-family: var(--f-body);
+    padding: 13px 0; cursor: pointer; transition: background 0.15s ease;
+  }
+  .cta-btn:hover { background: var(--yf-blue-active); }
+  .cta-link { display: inline-block; margin-top: 10px; font-size: 13px; color: var(--yf-blue); cursor: pointer; }
+
+  /* 休市占位 */
+  .closed-wrap {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center; padding: 0 40px; gap: 10px;
+  }
+  .closed-wrap .cw-icon { font-size: 40px; }
+  .closed-wrap .cw-title { font-size: 17px; font-weight: 600; }
+  .closed-wrap .cw-sub { font-size: 13px; color: var(--body); line-height: 1.7; }
+
+  .foot-note {
+    margin-top: 48px; text-align: center;
+    font-size: 13px; color: var(--muted); line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-tag"><span class="yf">WATCHLIST SIM</span> · AI 晨报/晚报回放 · 真实数据</div>
+<img class="page-logo" src="../assets/yf-brand/logo_blue@3x.png" alt="YF">
+
+<div class="wrap">
+  <!-- 控制区 -->
+  <div class="controls">
+    <h1>近两周 · 自选 AI 晨报 + 晚报 拼接回放</h1>
+    <p class="sub">基于真实自选列表 + Gangtise OpenAPI 实测数据回放 · 非 AI 编造内容</p>
+    <div class="date-bar">
+      <button class="nav-btn" id="prevBtn" aria-label="前一天">‹</button>
+      <div class="pills" id="pills"></div>
+      <button class="nav-btn" id="nextBtn" aria-label="后一天">›</button>
+    </div>
+    <p class="kbd-hint">键盘 <kbd>←</kbd> <kbd>→</kbd> 切换日期 · 周末休市</p>
+  </div>
+
+  <!-- iPhone 原型 -->
+  <div class="phone-stage">
+    <div class="iphone">
+      <div class="screen">
+        <div class="island"></div>
+        <div class="statusbar">
+          <span class="time" id="sbTime">8:00</span>
+          <span class="icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+            <svg width="16" height="11" viewBox="0 0 16 12" fill="currentColor"><path d="M8 9.6a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2zM8 5.4c1.8 0 3.4.7 4.6 1.9l-1.5 1.5A4.4 4.4 0 0 0 8 7.5a4.4 4.4 0 0 0-3.1 1.3L3.4 7.3A6.4 6.4 0 0 1 8 5.4zM8 1c2.9 0 5.5 1.2 7.4 3.1l-1.5 1.5A8.3 8.3 0 0 0 8 3.1a8.3 8.3 0 0 0-5.9 2.5L.6 4.1A10.4 10.4 0 0 1 8 1z"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="8" rx="2" fill="currentColor"/><path d="M23.5 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity="0.4"/></svg>
+          </span>
+        </div>
+
+        <div class="app" id="app"></div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot-note" id="footNote"></p>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  var RD = window.REPORT_DATA;
+  var meta = RD.meta;
+  var tradingSet = {};
+  RD.tradingDays.forEach(function (d) { tradingSet[d] = true; });
+
+  /* ===== 日期：2026-09-04 ~ 2026-09-18 ===== */
+  var WD = ['日', '一', '二', '三', '四', '五', '六'];
+  var DATES = [];
+  for (var d = 4; d <= 18; d++) {
+    var key = '2026-09-' + (d < 10 ? '0' : '') + d;
+    var dt = new Date(2026, 8, d);
+    DATES.push({ day: d, key: key, wd: WD[dt.getDay()], weekend: !tradingSet[key] });
+  }
+  function lastTradingDay(i) {
+    for (var j = i - 1; j >= 0; j--) if (!DATES[j].weekend) return DATES[j].day;
+    return null;
+  }
+
+  /* ===== 渲染 ===== */
+  var app = document.getElementById('app');
+  var sbTime = document.getElementById('sbTime');
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function briefHtml(it) {
+    var pctHtml = it.pct
+      ? '<span class="brief-pct pct num ' + it.dir + '">' + esc(it.pct) + '</span>'
+      : '<span class="brief-pct num flat">—</span>';
+    var sumHtml = (it.type === 'quote' && !it.sum)
+      ? '<div class="brief-sum na">Gangtise 暂无线索解读</div>'
+      : '<div class="brief-sum">' + esc(it.sum) + '</div>';
+    return '<div class="brief-item">' +
+      '<div class="brief-head">' +
+        '<span class="brief-stock">' + esc(it.name) + '<span class="code">' + esc(it.code) + '</span></span>' +
+        pctHtml +
+      '</div>' +
+      sumHtml +
+      '<div class="brief-src">' + esc(it.src) + '</div>' +
+    '</div>';
+  }
+
+  function itemsHtml(items) {
+    if (!items || !items.length) {
+      return '<div class="empty-tip">本日自选股暂无线索与异动</div>';
+    }
+    return items.map(briefHtml).join('');
+  }
+
+  function hotHtml(hot) {
+    if (!hot) return '';
+    return '<div class="section-title"><span>市场热点</span><span class="cnt">全平台共享</span></div>' +
+      '<div class="hot-item">' +
+        '<span class="hot-tag">热点话题 · 过滤版</span>' +
+        '<div class="hot-title">' + esc(hot.title) + '</div>' +
+        '<div class="brief-sum">' + esc(hot.text) + '</div>' +
+        '<div class="brief-src">' + esc(hot.src) + '</div>' +
+      '</div>';
+  }
+
+  function sectionHtml(sec, tagCls, tagText, secTitle, ovText) {
+    return '<span class="block-tag ' + tagCls + '">' + tagText + '</span>' +
+      '<div class="ov-strip">' + esc(ovText) + '</div>' +
+      '<div class="section-title"><span>' + secTitle + '</span><span class="cnt">· ' + (sec.items ? sec.items.length : 0) + ' 条</span></div>' +
+      itemsHtml(sec.items) +
+      hotHtml(sec.hot);
+  }
+
+  var cur = DATES.findIndex(function (x) { return x.key === '2026-09-14'; });
+  if (cur < 0) cur = 0;
+
+  function render() {
+    var info = DATES[cur];
+    document.querySelectorAll('.pill').forEach(function (p, i) {
+      p.classList.toggle('active', i === cur);
+    });
+
+    if (info.weekend) {
+      sbTime.textContent = '—';
+      var lt = lastTradingDay(cur);
+      app.innerHTML =
+        '<div class="app-header"><span class="back-btn">←</span>' +
+        '<span class="mail-title">AI 日报 · 9月' + info.day + '日 · 休市</span></div>' +
+        '<div class="closed-wrap">' +
+          '<div class="cw-icon">🌙</div>' +
+          '<div class="cw-title">今日港股 / 美股休市</div>' +
+          '<div class="cw-sub">9月' + info.day + '日 星期' + info.wd + ' · 无晨报 / 晚报推送' +
+          (lt ? '<br>最近交易日：9月' + lt + '日 · 可切换上方日期回看' : '') + '</div>' +
+        '</div>';
+      return;
+    }
+
+    sbTime.textContent = '8:00';
+    var day = RD.days[info.key];
+    var dateCN = '9月' + info.day + '日';
+    var eveningHtml;
+    if (day.evening && day.evening.pending) {
+      eveningHtml =
+        '<span class="block-tag evening">AI 晚报 · 16:40 推送</span>' +
+        '<div class="pending-box">' +
+          '<div class="pb-title">今日尚未收盘</div>' +
+          '<div class="pb-sub">AI 晚报将于 16:40 推送</div>' +
+        '</div>';
+    } else {
+      eveningHtml = sectionHtml(day.evening, 'evening', 'AI 晚报 · 16:40 推送', '今日回顾', day.evening.overview);
+    }
+
+    app.innerHTML =
+      '<div class="app-header"><span class="back-btn">←</span>' +
+      '<span class="mail-title">AI 日报 · ' + dateCN + ' · 晨报 + 晚报</span></div>' +
+      '<div class="scroll">' +
+        sectionHtml(day.morning, 'morning', 'AI 晨报 · 8:00 推送', '隔夜关注', day.morning.overview) +
+        '<div class="divider">当日 16:30 收盘后 · AI 晚报已送达</div>' +
+        eveningHtml +
+        '<div style="height:12px"></div>' +
+      '</div>' +
+      '<div class="cta-area">' +
+        '<button class="cta-btn">查看今日自选股</button>' +
+        '<span class="cta-link">管理推送订阅</span>' +
+      '</div>';
+  }
+
+  /* ===== 日期切换 ===== */
+  var pillsEl = document.getElementById('pills');
+  DATES.forEach(function (info, i) {
+    var b = document.createElement('button');
+    b.className = 'pill';
+    b.innerHTML = '9/' + info.day + ' ' + info.wd +
+      (info.weekend ? '<span class="rest">休</span>' : '');
+    b.addEventListener('click', function () { cur = i; render(); });
+    pillsEl.appendChild(b);
+  });
+  document.getElementById('prevBtn').addEventListener('click', function () {
+    if (cur > 0) { cur--; render(); }
+  });
+  document.getElementById('nextBtn').addEventListener('click', function () {
+    if (cur < DATES.length - 1) { cur++; render(); }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft' && cur > 0) { cur--; render(); }
+    if (e.key === 'ArrowRight' && cur < DATES.length - 1) { cur++; render(); }
+  });
+
+  /* ===== 底部说明 ===== */
+  var unresolved = (meta.unresolved || []).map(function (u) { return u.name; }).join(' / ');
+  document.getElementById('footNote').innerHTML =
+    '真实数据回放：行情（Gangtise open-data 日K/快照）、投研线索、个股看点、热点话题均为 Gangtise OpenAPI 实测返回' +
+    ' · 投研线索权限窗口自 2026-09-11 起' +
+    ' · 生成时间 ' + esc(meta.generatedAt) +
+    (unresolved ? ' · 未覆盖标的：' + esc(unresolved) + '（Gangtise 未收录）' : '');
+
+  render();
+})();
+</script>
+</body>
+</html>
