@@ -357,3 +357,16 @@ a.version-button { text-decoration: none; display: inline-flex; }
 @media (max-width: 680px) {
   .stock-change { margin-left: 20px; }
 }
+
+/* ---------------- V3 后续关注排版修正（2026-10-29） ----------------
+   催化事件从"日期列+事件列"栅格改为上下两行：日期 11px 灰字一行，事件 13px 正文一行，
+   长日期口径（如"2026年11月（9月季度业绩窗口，具体日期未明确）"）自然换行，不再撑宽左列。 */
+.catalyst-item { padding: 18px 20px; }
+.catalyst-item .catalyst-stock { margin-bottom: 8px; }
+.catalyst-item .catalyst-event { display: block; padding: 10px 0 0; border-top: 0; gap: 0; }
+.catalyst-item .catalyst-event + .catalyst-event { margin-top: 10px; border-top: 1px solid var(--hairline); }
+.catalyst-item .catalyst-date { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--muted); line-height: 1.6; }
+.catalyst-item .catalyst-text { display: block; margin-top: 3px; font-size: 13px; line-height: 1.7; }
+.catalyst-item .watching-title { margin: 16px 0 8px; }
+.catalyst-item .watching-list li { padding-left: 16px; line-height: 1.75; }
+.catalyst-item .watching-list li::before { left: 2px; top: 9px; }
