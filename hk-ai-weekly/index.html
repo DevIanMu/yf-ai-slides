@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="YF 港股 AI 周报：六类自选组合与无自选热门兜底的真实数据效果演示">
+  <title>YF 港股周报 · 用户分型演示</title>
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="shell">
+      <div class="brand-row">
+        <img class="brand-logo" src="../../assets/yf-brand/logo_across_white@3x.png" alt="云锋有鱼 YF" width="1200" height="336">
+        <span class="brand-caption">HK AI WEEKLY · USER VIEWS</span>
+      </div>
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">港股专属 · 开发前效果评审 · 真实数据</p>
+          <h1>同一批港股数据，<br>多种用户视角。</h1>
+          <p class="hero-copy">多类港股自选组合，加一种无自选热门兜底。看看同一套规则如何组织不同的本周回顾、机构观点与后续催化，以及如何引导用户回到云锋 App。</p>
+        </div>
+        <div class="hero-proof" aria-label="演示数据说明">
+          <div class="proof-item"><strong class="num" id="personaModes">7+1</strong><span>自选组合 + 热门港股兜底</span></div>
+          <div class="proof-item"><strong class="num" id="dataWindow">—</strong><span>同一真实数据窗口</span></div>
+          <div class="proof-item"><strong class="num">0</strong><span>页面运行时新增 API 与 LLM 调用</span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell main">
+    <div class="version-bar">
+      <span class="version-title">数据版本</span>
+      <div class="version-switch" aria-label="数据版本">
+        <button type="button" id="latestVersion" class="version-button active" aria-pressed="true">最新数据</button>
+        <button type="button" id="historyVersion" class="version-button" aria-pressed="false">历史数据</button>
+      </div>
+    </div>
+    <section aria-labelledby="controlTitle">
+      <div class="mode-bar">
+        <div>
+          <p class="section-eyebrow">VIEWER CONTROL</p>
+          <h2 id="controlTitle">选择一种用户视角</h2>
+        </div>
+        <div class="mode-switch" aria-label="预览模式">
+          <button type="button" id="singleMode" class="mode-button active" aria-pressed="true">单人预览</button>
+          <button type="button" id="compareMode" class="mode-button" aria-pressed="false">双人对比</button>
+        </div>
+      </div>
+      <div class="persona-grid" id="personaGrid" aria-label="用户类型"></div>
+      <div class="compare-picker" id="comparePicker" hidden>
+        <label>用户 A<select id="compareA" aria-label="选择对比用户 A"></select></label>
+        <span class="compare-versus" aria-hidden="true">VS</span>
+        <label>用户 B<select id="compareB" aria-label="选择对比用户 B"></select></label>
+      </div>
+    </section>
+
+    <section id="singleView" class="single-layout" aria-label="单用户周报预览">
+      <article class="mail-card" id="singleMail" aria-label="用户收到的周报"></article>
+      <aside class="insight-panel" id="insightPanel" aria-label="周报规则解释"></aside>
+    </section>
+
+    <section id="compareView" aria-label="双用户周报对比" hidden>
+      <div class="compare-summary" id="compareSummary"></div>
+      <div class="compare-grid">
+        <div class="compare-column">
+          <div class="compare-column-header" id="compareAHeader"></div>
+          <article class="mail-card compare-mail" id="compareAMail" aria-label="用户 A 的周报"></article>
+        </div>
+        <div class="compare-column">
+          <div class="compare-column-header" id="compareBHeader"></div>
+          <article class="mail-card compare-mail" id="compareBMail" aria-label="用户 B 的周报"></article>
+        </div>
+      </div>
+    </section>
+
+    <details class="demo-notes">
+      <summary>演示边界与数据说明</summary>
+      <div class="notes-content">
+        <p>各类人物是为演示定义的典型港股自选组合，不代表产品已经具备新手、专业、活跃度等用户画像能力；「无港股自选」使用固定热门池，不属于个性化推荐。</p>
+        <ul>
+          <li>最新版新增「AI 概念型」：智谱、商汤、范式智能、金山云、腾讯、阿里、中芯、快手。AI 及算力链在本周 202 个热点标题中命中 72 个（35.6%）。</li>
+          <li>最新版（10-22～10-28）与历史版（10-08～10-14）独立存放；页面只做视觉排版，不润色正文，也不跨版本补数据。</li>
+          <li>最新版行情、个股看点、机构线索、未来催化与热点均已通过 Gangtise skills 补齐；历史版同样完整，两版互不覆盖。</li>
+          <li>个别看点日期早于本周、行业级线索混入等已知问题保留，供开发前评审。</li>
+          <li>本次样本均为热门港股，未真实触发长尾标的覆盖不足；不虚构长尾用户效果。</li>
+          <li>回 App 按钮与二维码均指向 <a href="https://www.yfyy.com/download" target="_blank" rel="noopener noreferrer">云锋官方下载页</a>；未模拟 deeplink、个股详情或自选页跳转。</li>
+          <li>单人模式可用键盘左右方向键切换用户；双人模式可在两个下拉框中任选用户。</li>
+        </ul>
+      </div>
+    </details>
+  </main>
+
+  <footer class="shell page-footer">YF × Gangtise · 港股 AI 周报 v1 零二次处理方案 · 本地静态演示</footer>
+  <div class="sr-only" id="liveStatus" aria-live="polite"></div>
+  <noscript>请启用 JavaScript 以切换用户并查看周报。</noscript>
+  <script src="demo_data_2026-10-28.js?v=20261029"></script>
+  <script src="demo_data.js"></script>
+  <script src="demo.js?v=20261029"></script>
+</body>
+</html>
