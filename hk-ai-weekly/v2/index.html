@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="YF 港股 AI 周报 V2 个股深度版：按自选股聚合的本周档案卡，热点、分析、下周关注一次列齐">
+  <title>YF 港股周报 V2 · 个股深度版</title>
+  <link rel="stylesheet" href="deep.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="shell">
+      <div class="brand-row">
+        <img class="brand-logo" src="assets/logo_across_white@3x.png" alt="云锋有鱼 YF" width="1200" height="336">
+        <span class="brand-caption">HK AI WEEKLY · V2 DEEP DIVE</span>
+      </div>
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">港股专属 · 调整版评审 · 真实数据 · V2</p>
+          <h1>每只自选股，<br>一张本周档案卡。</h1>
+          <p class="hero-copy">按标的聚合：本周表现、发生了什么、机构怎么看、命中哪些热点、下周关注什么，一张卡一次列齐。卡片默认收起，点开后层层展开——给没有分析时间的用户一个可探索的空间。与 V1 五板块版、V3 加厚版同一批真实数据。</p>
+        </div>
+        <div class="hero-proof" aria-label="演示数据说明">
+          <div class="proof-item"><strong class="num" id="personaModes">8</strong><span>自选组合 + 热门兜底</span></div>
+          <div class="proof-item"><strong class="num" id="dataWindow">—</strong><span>同一真实数据窗口</span></div>
+          <div class="proof-item"><strong class="num">0</strong><span>页面运行时新增 API 与 LLM 调用</span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell main">
+    <div class="version-bar">
+      <span class="version-title">版本对比（同一批数据 · 不同组织方式）</span>
+      <div class="version-switch" aria-label="版本切换">
+        <a class="version-button" href="../index.html"><strong>V1 五板块版</strong><span>章节横切</span></a>
+        <button type="button" class="version-button active" aria-pressed="true"><strong>V2 个股深度版</strong><span>本页 · 按标的纵切</span></button>
+        <a class="version-button" href="../v3/index.html"><strong>V3 板块加厚版</strong><span>保留五板块</span></a>
+      </div>
+    </div>
+    <section aria-labelledby="controlTitle">
+      <div class="mode-bar">
+        <div>
+          <p class="section-eyebrow">VIEWER CONTROL</p>
+          <h2 id="controlTitle">选择一种用户视角</h2>
+        </div>
+        <div class="mode-switch" aria-label="预览模式">
+          <button type="button" id="singleMode" class="mode-button active" aria-pressed="true">单人预览</button>
+          <button type="button" id="compareMode" class="mode-button" aria-pressed="false">双人对比</button>
+        </div>
+      </div>
+      <div class="persona-grid" id="personaGrid" aria-label="用户类型"></div>
+      <div class="compare-picker" id="comparePicker" hidden>
+        <label>用户 A<select id="compareA" aria-label="选择对比用户 A"></select></label>
+        <span class="compare-versus" aria-hidden="true">VS</span>
+        <label>用户 B<select id="compareB" aria-label="选择对比用户 B"></select></label>
+      </div>
+    </section>
+
+    <section id="singleView" class="single-layout" aria-label="单用户周报预览">
+      <article class="mail-card" id="singleMail" aria-label="用户收到的周报"></article>
+      <aside class="insight-panel" id="insightPanel" aria-label="周报规则解释"></aside>
+    </section>
+
+    <section id="compareView" aria-label="双用户周报对比" hidden>
+      <div class="compare-summary" id="compareSummary"></div>
+      <div class="compare-grid">
+        <div class="compare-column">
+          <div class="compare-column-header" id="compareAHeader"></div>
+          <article class="mail-card compare-mail" id="compareAMail" aria-label="用户 A 的周报"></article>
+        </div>
+        <div class="compare-column">
+          <div class="compare-column-header" id="compareBHeader"></div>
+          <article class="mail-card compare-mail" id="compareBMail" aria-label="用户 B 的周报"></article>
+        </div>
+      </div>
+    </section>
+
+    <details class="demo-notes">
+      <summary>演示边界与数据说明</summary>
+      <div class="notes-content">
+        <p>本页是响应"内容太薄、要给用户可探索空间"反馈的调整版：V1 每条内容截到一句话，V2 改为按自选股聚合的完整档案卡，全部内容规则级抽取自 Gangtise 已有数据（一页通全文/投研线索/个股看点/热点话题），零 LLM 改写、零新增 API 调用。</p>
+        <ul>
+          <li>卡片内容：完整看点 + 一页通「公司近况跟踪」前 2 条 + 投研线索每只最多 3 条（摘要 200 字）+ 命中热点话题 + 未来催化事件 3 条与「关键观察指标」3 条 + 风险提示首条。</li>
+          <li>合规：机构口径段落经《Demo需求文档》术语黑名单做句级过滤（命中整句丢弃），如汇丰看点因含"估值修复"被整句过滤后留空。这是规则过滤的保守效果，不等同于上线前的合规改写层。</li>
+          <li>个别标的本周无新增线索/看点时，对应区块整卡省略（宁缺毋滥），不凑数。</li>
+          <li>数据窗口与 V1/V3 完全相同（2026-10-22 ~ 10-28）；8 类人物是演示用典型组合，不代表真实用户画像能力。</li>
+          <li>回 App 按钮与二维码均指向 <a href="https://www.yfyy.com/download" target="_blank" rel="noopener noreferrer">云锋官方下载页</a>；未模拟 deeplink、个股详情或自选页跳转。</li>
+          <li>单人模式可用键盘左右方向键切换用户；卡片点击展开/收起。</li>
+        </ul>
+      </div>
+    </details>
+  </main>
+
+  <footer class="shell page-footer">YF × Gangtise · 港股 AI 周报 V2 个股深度版 · 本地静态演示 · <a href="../index.html">V1 原版</a> · <a href="../v3/index.html">V3 加厚版</a></footer>
+  <div class="sr-only" id="liveStatus" aria-live="polite"></div>
+  <noscript>请启用 JavaScript 以切换用户并查看周报。</noscript>
+  <script src="demo_data_v2.js"></script>
+  <script src="deep.js"></script>
+</body>
+</html>
