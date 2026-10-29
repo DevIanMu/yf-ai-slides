@@ -370,3 +370,12 @@ a.version-button { text-decoration: none; display: inline-flex; }
 .catalyst-item .watching-title { margin: 16px 0 8px; }
 .catalyst-item .watching-list li { padding-left: 16px; line-height: 1.75; }
 .catalyst-item .watching-list li::before { left: 2px; top: 9px; }
+
+/* ---------------- V3 后续关注布局改单栏行式（2026-10-30） ----------------
+   双列卡片会因"有无机构跟踪指标"产生高度差与卡内空白；改为整行单栏：
+   每只股票一行（股票名 + 事件 + 跟踪指标），行与行细分隔线，内容多少都只撑自己的行高。 */
+.catalyst-list { grid-template-columns: 1fr; gap: 0; }
+.catalyst-item { padding: 16px 2px; border-radius: 0; background: transparent; }
+.catalyst-item:first-child { padding-top: 2px; }
+.catalyst-item + .catalyst-item { border-top: 1px solid var(--hairline-soft); }
+.catalyst-item .watching-list { max-width: 760px; }
