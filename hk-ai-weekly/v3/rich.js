@@ -64,7 +64,7 @@
         '<span class="stock-pct pct num ' + d + '">' + fmtPct(s.pct) + '</span>' +
         '<span class="stock-close num">收 ' + s.close.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) + '</span></div>' +
         (s.summary ? '<p class="stock-summary">' + esc(s.summary) + '</p><span class="stock-source">Gangtise 看点</span>' : '') +
-        (s.change ? '<p class="stock-change"><span class="block-tag">本周变化</span>' + esc(s.change) + '</p>' : '') +
+        (s.change ? '<p class="stock-change"><span class="block-tag">公司近况</span>' + esc(s.change) + '</p>' : '') +
         '</div>';
     }).join('');
     if (persona.restStat) {

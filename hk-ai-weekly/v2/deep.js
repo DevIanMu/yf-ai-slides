@@ -67,7 +67,7 @@
   function cardBlocks(c) {
     var html = '';
     if (c.changes.length) {
-      html += '<div class="card-block"><h4>本周发生了什么</h4><ul class="change-list">' + c.changes.map(function (t) {
+      html += '<div class="card-block"><h4>公司近况<span class="block-note">一页通 · 公司近况跟踪（近期要点，非仅限本周）</span></h4><ul class="change-list">' + c.changes.map(function (t) {
         return '<li>' + esc(t) + '</li>';
       }).join('') + '</ul></div>';
     }
@@ -79,7 +79,7 @@
       }).join('') + '</div>';
     }
     if (c.topics.length) {
-      html += '<div class="card-block"><h4>本周热点关联</h4>' + c.topics.map(function (t) {
+      html += '<div class="card-block"><h4>本周热点关联<span class="block-note">本周热门话题 · 命中该股</span></h4>' + c.topics.map(function (t) {
         return '<div class="hot-item"><span class="hot-tag">本周命中</span>' +
           '<h5 class="hot-title">' + esc(t.title) + '</h5>' +
           (t.event ? '<p class="hot-event">' + esc(t.event) + '</p>' : '') +
@@ -87,7 +87,7 @@
       }).join('') + '</div>';
     }
     if (c.catalysts.length || c.watching.length) {
-      html += '<div class="card-block"><h4>下周关注</h4>';
+      html += '<div class="card-block"><h4>后续关注<span class="block-note">一页通 · 未来催化，时间口径以原文为准</span></h4>';
       if (c.catalysts.length) {
         html += '<div class="catalyst-event-list">' + c.catalysts.map(function (ev) {
           return '<div class="catalyst-event"><span class="catalyst-date">' + esc(ev.when) + '</span><span class="catalyst-text">' + esc(ev.event) + '</span></div>';
@@ -101,7 +101,7 @@
       html += '</div>';
     }
     if (c.risk) {
-      html += '<div class="card-block card-risk"><h4>风险提示</h4><p>' + esc(c.risk) + '</p></div>';
+      html += '<div class="card-block card-risk"><h4>风险提示<span class="block-note">一页通 · 核心假设及证伪条件</span></h4><p>' + esc(c.risk) + '</p></div>';
     }
     return html;
   }
