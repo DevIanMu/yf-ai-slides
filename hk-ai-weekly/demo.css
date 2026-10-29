@@ -190,6 +190,8 @@ button:focus-visible, select:focus-visible, summary:focus-visible, [tabindex]:fo
 .clue-title { margin: 0; font-size: 14px; font-weight: 600; line-height: 1.55; text-wrap: pretty; }
 .clue-summary { margin: 7px 0 0; color: var(--body); font-size: 13px; line-height: 1.7; text-wrap: pretty; }
 .clue-source { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; }
+.clue-more { margin: 18px 0 0; color: var(--muted); font-size: 11px; }
+.clue-more a { color: var(--yf-blue); text-decoration: none; }
 
 .catalyst-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .catalyst-item { min-width: 0; padding: 16px; border-radius: var(--radius-lg); background: var(--surface-soft); }

@@ -157,6 +157,7 @@
         '<p class="clue-summary">' + inline(item.summary) + '</p>' +
         '<span class="clue-source">' + esc(item.source) + ' · ' + esc(item.date) + '</span></div>';
     }).join('');
+    html += '<p class="clue-more">摘要为节选，<a href="https://www.yfyy.com/download" target="_blank" rel="noopener noreferrer">下载云锋 App 查看完整内容</a></p>';
     html += generic.map(function (line) { return '<p class="generic-line">' + inline(line) + '</p>'; }).join('');
     return html + '</section>';
   }
@@ -243,7 +244,7 @@
       ? '<div class="data-warning"><strong>本版部分数据未获取</strong><p>' + warnings.map(esc).join('；') + '</p></div>'
       : '';
     var html = '<header class="mail-header"><div><div class="mail-brand">' +
-      '<img class="mail-logo" src="../../assets/yf-brand/logo_blue@3x.png" alt="" width="34" height="34">' +
+      '<img class="mail-logo" src="../assets/yf-brand/logo_blue@3x.png" alt="" width="34" height="34">' +
       '<div><p class="mail-kicker">YF HK WEEKLY</p><h2>' + reportTitle + '</h2></div></div>' +
       '<div class="mail-meta"><span class="num">' + esc(DATA.meta.window) + '</span><span>' + countLabel + ' ' + persona.metrics.watchlistCount + ' 只</span><span>数据来源：Gangtise 投研</span></div></div>' +
       '<span class="ai-badge">AI 生成</span></header><div class="mail-body">' + warning + context;
