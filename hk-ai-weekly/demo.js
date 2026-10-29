@@ -153,8 +153,8 @@
     var html = sectionStart('clues', section.title, items.length + ' 条');
     html += items.map(function (item) {
       return '<div class="clue-item"><span class="clue-stock">' + esc(item.stock) + '</span>' +
-        '<h4 class="clue-title">' + inline(item.title) + '</h4>' +
-        '<p class="clue-summary">' + inline(item.summary) + '</p>' +
+        '<h4 class="clue-title">' + esc(item.title) + '</h4>' +
+        '<p class="clue-summary">' + esc(item.summary) + '</p>' +
         '<span class="clue-source">' + esc(item.source) + ' · ' + esc(item.date) + '</span></div>';
     }).join('');
     html += '<p class="clue-more">摘要为节选，<a href="https://www.yfyy.com/download" target="_blank" rel="noopener noreferrer">下载云锋 App 查看完整内容</a></p>';
